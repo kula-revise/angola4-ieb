@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Battle Both Sides Won | Independent Africa: Angola | Kula Revise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     KULA SOURCE ENGINE v3: TOKEN CONTRACT
+     This file is fixed mechanism. Do not edit it per series.
+     A skin sets the THIRTEEN identity variables in the block below
+     and nothing else is required of it.
+
+     Two accents, split by job:
+       --a1  accent one: navigation, progress, emphasis, option letters,
+             the primary button, the story date. The "structure" accent.
+       --a2  accent two: anything the learner earned. Correct answers,
+             the running summary, breakdown bars, key facts, the last
+             story line. The "reward" accent.
+     Set --a1-rgb / --a2-rgb to the SAME colours as r,g,b (no #), because
+     the tints, washes and shadows are built from them.
+     ============================================================ */
+
+  :root {
+    /* ---- THE IDENTITY CONTRACT. A skin overrides these thirteen. ---- */
+    --sand:  #F2E9D9;   /* page background */
+    --paper: #FBF6EB;   /* cards */
+    --cut:   #FFFCF4;   /* insets, sources, carousels */
+    --ink:   #1B2A33;   /* body text */
+    --clay:  #8C4A2F;   /* stage tags, quiet labels */
+    --fade:  #7B7263;   /* muted text, captions */
+    --a1: #B4622D;   --a1-rgb: 180,98,45;
+    --a2: #1F6B58;   --a2-rgb: 31,107,88;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans:  system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --mono:  var(--sans);
+
+    /* ---- DERIVED TOKENS. A skin should not need to touch these. ----
+       They exist because the engine used to hardcode fourteen literal
+       colours, which is what made every glossary definition and every
+       source expander invisible in dark mode. Everything below now
+       tracks the identity variables above, so a skin that sets --fade
+       and --ink correctly gets a readable dark mode for free. ---- */
+    --muted:      var(--fade);          /* secondary body text: kt-def, toggle-body, disc-body, cover-line */
+    --hair:       rgba(0,0,0,0.12);     /* progress track, quiet rules */
+    --hair-strong:rgba(0,0,0,0.28);     /* dashed divider inside an expander */
+    --on-ink:     var(--paper);         /* text sitting on an --ink ground */
+    --on-ink-mute:#B8AFE0;              /* secondary text on an --ink ground */
+    --on-a1:      var(--paper);         /* text sitting on an --a1 ground */
+    --on-a2:      var(--paper);         /* text sitting on an --a2 ground */
+    --ink-deep:   #12202a;              /* --ink one step darker, button hover */
+    --a2-deep:    #164C3F;              /* --a2 one step darker, button hover */
+    --ok-bg:      rgba(var(--a2-rgb),0.13);  /* a correct option, a placed item */
+    --no-bg:      rgba(140,74,47,0.13);      /* a wrong option, a misplaced item */
+    /* Skill chips. a = the entry-level skill (Extract, Argue, Evidence, Recall).
+       b = the middle skill (Interpret, Understand). c = unassessed instinct.
+       The top skill (Evaluate, Weigh, Apply) sits on a solid accent ground. */
+    --chip-a-bg: rgba(var(--a1-rgb),0.16);  --chip-a-fg: var(--a1);
+    --chip-b-bg: rgba(var(--a2-rgb),0.16);  --chip-b-fg: var(--a2);
+    --chip-c-bg: rgba(0,0,0,0.06);
+    --scrim:  rgba(27,42,51,0.5);       /* modal backdrop */
+    --inset:  rgba(255,255,255,0.4);    /* sort column well */
+
+    /* Legacy aliases. Older skins and the quiz shell reference these. */
+    --copper: var(--a1);
+    --malachite: var(--a2);
+  }
+
+  /* ---- DARK MODE TOKEN RE-POINT ---------------------------------------
+     The skin supplies body.dark values for the thirteen identity variables.
+     Everything derived re-points here, once, for every unit. This is the
+     engine-level fix for the three defects logged in MOBILE_FIXES_HANDOVER:
+     a skin no longer needs the patch block at all.
+     ------------------------------------------------------------------- */
+  body.dark {
+    --muted:      var(--fade);
+    --hair:       rgba(255,255,255,0.14);
+    --hair-strong:rgba(255,255,255,0.26);
+    --on-ink:     var(--sand);
+    --on-a1:      var(--sand);
+    --on-a2:      var(--sand);
+    --ink-deep:   var(--ink);
+    --a2-deep:    var(--a2);
+    --ok-bg:      rgba(var(--a2-rgb),0.20);
+    --no-bg:      rgba(var(--a1-rgb),0.18);
+    --chip-a-bg:  rgba(var(--a1-rgb),0.22);  --chip-a-fg: var(--ink);
+    --chip-b-bg:  rgba(var(--a2-rgb),0.22);  --chip-b-fg: var(--ink);
+    --chip-c-bg:  rgba(255,255,255,0.10);
+    --scrim:  rgba(0,0,0,0.62);
+    --inset:  rgba(255,255,255,0.05);
+  }
+  /* Key term chips keep a visible edge once the ground inverts. */
+  body.dark .kt-term { border-color: var(--hair-strong); }
+  body.dark .kt-term summary { color: var(--ink); }
+  body.dark .kt-label { border-top-color: var(--hair-strong); }
+  /* v2 dimmed the options a learner did not pick; at 0.45 they vanish on a dark ground. */
+  body.dark .option.dimmed, body.dark .option-btn.dimmed { opacity: 0.72; }
+
+  /* ---- MODE TOGGLE. Fixed bottom right, 44px minimum tap target. ---- */
+  .mode-toggle {
+    position: fixed; bottom: 0.9rem; right: 0.9rem; z-index: 40;
+    display: flex; align-items: center; gap: 0.4rem;
+    font-family: var(--sans); font-size: 0.66rem; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.62rem 0.75rem; min-height: 44px;
+    background: var(--paper); color: var(--fade);
+    border: 1px solid var(--hair-strong); cursor: pointer;
+    box-shadow: 0 2px 12px var(--scrim);
+  }
+  .mode-toggle:hover { color: var(--ink); border-color: var(--a1); }
+  .mode-toggle:focus-visible { outline: 2px solid var(--a1); outline-offset: 2px; }
+  .mode-toggle svg { width: 0.9rem; height: 0.9rem; fill: none; stroke: currentColor; stroke-width: 1.6; }
+  @media (max-width: 520px) {
+    .mode-toggle { min-height: 44px; padding: 0.62rem 0.7rem; font-size: 0.64rem; }
+  }
+  @media print { .mode-toggle { display: none; } }
+
+  /* ---- STICKY HEADER AT 360px --------------------------------------
+     .top-meta is a flex row and flex children default to min-width auto,
+     so at 360px the eyebrow and the step counter used to overlap. The
+     eyebrow now takes the free space and truncates rather than pushing
+     the counter off. Renders correctly at 375px and above either way,
+     which is why this was missed. 360 is common on mid-range Android.
+     ----------------------------------------------------------------- */
+  .top-meta { gap: 0.7rem; flex-wrap: nowrap; }
+  .top-meta > * { min-width: 0; }
+  .top-meta #lesson-tag, .top-meta .top-label {
+    flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .top-meta .top-count { flex: 0 0 auto; white-space: nowrap; }
+  @media (max-width: 380px) {
+    .top-meta { font-size: 0.62rem; letter-spacing: 0.09em; }
+  }
+
+/* ANGOLA IEB: ultra
+   Identity is the violet accent. In dark it sits against deep indigo with an
+   acid lime as the quiet pair colour, so the screen reads as a product a
+   learner already uses rather than as a document.
+   Independent Africa is one IEB topic with two strands. The Congo is the essay
+   strand and holds Ore Seam, so Angola must not read as a variant of it.
+   The metaphor comes from what the sources actually are: this strand is argued
+   in rooms where outside powers speak about Angola in front of each other, and
+   recorded as tabled papers with a symbol in the corner. */
+
+:root {
+  /* grounds and ink: cool lilac paper, near-black indigo type */
+  --sand:  #F1F0F8;   /* page background */
+  --paper: #FFFFFF;   /* cards */
+  --cut:   #EAE8F4;   /* insets, sources, carousels */
+  --ink:   #100B22;   /* body text */
+  --clay:  #55507A;   /* stage tags, quiet labels: steel, not terracotta */
+  --fade:  #403A5C;   /* muted text, captions */
+  /* accents: violet carries the identity, deep teal labels beside it */
+  --a1: #0E6E85;  --a1-rgb: 14,110,133;
+  --a2: #6D28D9;  --a2-rgb: 109,40,217;
+  /* type: a transitional serif for the history, mono for anything with a symbol */
+  --serif: 'Fraunces', Georgia, serif;
+  --sans:  'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  --mono:  'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+
+/* Flat ground. Ore Seam layers two warm radial washes; this one is a cold
+   surface with a faint vertical rule, like paper on a table. */
+body {
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 38px, rgba(16,11,34,0.028) 38px 39px) !important;
+}
+
+/* Edges are square and ruled rather than soft. Every card carries a hairline
+   and a single accent stripe at the head. */
+.card, .source, .stat-wrap, .carousel, .kt {
+  border-radius: 0 !important;
+  border: 1px solid rgba(154,100,16,0.20) !important;
+  box-shadow: none !important;
+}
+.card { border-top: 3px solid var(--a2) !important; }
+
+/* Labels, dates and any document symbol go to mono. This is the strand's
+   signature: provenance is carried by the typography, not explained. */
+.stage-tag, .cover-eyebrow, .top-meta, .story-unit, .kt-label,
+.expl-label, .results-eyebrow, .pop-label, .chip, .marks, .stat-label {
+  font-family: var(--mono) !important;
+  letter-spacing: 0.14em !important;
+}
+
+/* Sources set as tabled papers: margin rule down the left, symbol line right. */
+.source {
+  background: var(--cut) !important;
+  border-left: 3px solid var(--a1) !important;
+  padding-left: 1.35rem !important;
+}
+.source-attr {
+  font-family: var(--mono) !important;
+  font-size: 0.68rem !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase;
+  color: var(--a1) !important;
+  text-align: right;
+  border-bottom: 1px solid rgba(154,100,16,0.18);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+/* Cover flourish. The v2 default is a warm radial arc fan plus three dots.
+   Both are Ore Seam signatures, so both go. In their place: a ruled bar with a
+   single brick mark at the left, like a document reference stripe. */
+.header-block::before, .cover-arc, .cover-fan { display: none !important; }
+.rule, .cover-rule, .flourish {
+  width: 128px !important;
+  height: 2px !important;
+  background-image: none !important;
+  background: linear-gradient(90deg,
+    var(--a1) 0 20%, rgba(154,100,16,0.30) 20% 100%) !important;
+}
+
+/* The cover lede is italic serif in v2; here it is upright, so the opening
+   screen reads as a tabled statement rather than a caption. */
+.cover-line { font-style: normal !important; color: var(--clay) !important; }
+
+/* Chips: square, mono, and keyed to the source spine rather than the essay one. */
+.chip { border-radius: 0 !important; font-size: 0.6rem !important; }
+
+/* Begin button: outlined rather than solid, so the cover reads cooler. */
+.btn-begin {
+  background: transparent !important;
+  color: var(--ink) !important;
+  border: 2px solid var(--ink) !important;
+}
+.btn-begin:hover { background: var(--ink) !important; color: var(--paper) !important; }
+
+
+/* Dark mode. The paper ground goes to deep indigo and the cards to a raised
+   indigo, so the violet and the lime are the only bright things on screen. */
+body.dark {
+  --sand:  #0B0918;
+  --paper: #151129;
+  --cut:   #1E1938;
+  --ink:   #EFECFB;
+  --clay:  #A79CD4;
+  --fade:  #ACA3CC;
+  --a1: #C9FF3D;  --a1-rgb: 201,255,61;
+  --a2: #A78BFA;  --a2-rgb: 167,139,250;
+}
+body.dark { background-image:
+  repeating-linear-gradient(90deg, transparent 0 38px, rgba(239,236,251,0.035) 38px 39px) !important; }
+body.dark .card, body.dark .source, body.dark .stat-wrap,
+body.dark .carousel, body.dark .kt { border-color: rgba(167,139,250,0.30) !important; }
+body.dark .btn-begin { border-color: var(--ink) !important; color: var(--ink) !important; }
+body.dark .btn-begin:hover { background: var(--ink) !important; color: var(--sand) !important; }
+body.dark .mode-toggle { background: var(--paper); border-color: rgba(239,236,251,0.24); }
+
+/* The RECALL chip keeps its light background in dark mode, so it glares.
+   Tier chips get dark-mode grounds of their own. */
+body.dark .chip { background: rgba(167,139,250,0.20) !important; color: #DDD3FE !important; }
+body.dark .chip-a,  body.dark .chip-a   { background: rgba(167,139,250,0.22) !important; color: #D3FF7A !important; }
+body.dark .chip-b, body.dark .chip-b { background: rgba(201,255,61,0.16) !important; color: #E8FFB8 !important; }
+body.dark .chip-c,   body.dark .chip-d  { background: rgba(239,236,251,0.16) !important; color: #EFECFB !important; }
+/* Options need a visible edge against the charcoal card. */
+body.dark .option-btn, body.dark .opt-btn { border-color: rgba(239,236,251,0.20) !important; }
+
+
+/* ---- DARK MODE STATE COLOURS -----------------------------------------------
+   The base variables flip, but several states carry hardcoded light values.
+   Left alone they produce pale text on pale grounds. */
+
+/* Answer states: dark grounds with a coloured edge, text stays --ink. */
+body.dark .option-btn.correct {
+  background: rgba(167,139,250,0.20) !important;
+  border-color: #A78BFA !important;
+  color: var(--ink) !important;
+}
+body.dark .option-btn.wrong {
+  background: rgba(167,139,250,0.16) !important;
+  border-color: #C4B5FD !important;
+  color: var(--ink) !important;
+}
+body.dark .option-btn.correct .opt-text,
+body.dark .option-btn.wrong   .opt-text { color: var(--ink) !important; }
+body.dark .option-btn.correct .opt-letter { color: #C4B5FD !important; }
+body.dark .option-btn.wrong   .opt-letter { color: #DAFF8C !important; }
+body.dark .opt-mark { color: var(--ink) !important; }
+/* v2 dims the options a learner did not pick; at 0.45 on a dark ground they vanish. */
+body.dark .option-btn.dimmed { opacity: 0.72 !important; }
+
+/* The full-check button is dark-on-dark once the ground inverts. */
+body.dark .primary-btn {
+  background: var(--cut) !important;
+  border: 1px solid rgba(167,139,250,0.45) !important;
+  color: var(--ink) !important;
+}
+body.dark .primary-btn:hover { background: #241E42 !important; }
+body.dark .primary-btn .btn-title { color: var(--ink) !important; }
+body.dark .primary-btn .btn-sub,
+body.dark .primary-btn .btn-arrow { color: #C0B6EC !important; }
+
+/* Section rows and the small action button. */
+body.dark .section-btn { border-color: rgba(239,236,251,0.18) !important; color: var(--ink) !important; }
+body.dark .section-btn:hover { background: var(--cut) !important; border-color: var(--a2) !important; }
+body.dark .primary-btn-small { background: var(--a2) !important; color: #0B0918 !important; }
+body.dark .primary-btn-small:hover:not(:disabled) { background: #B79BFB !important; }
+body.dark .secondary-btn { border-color: rgba(239,236,251,0.30) !important; color: var(--ink) !important; }
+body.dark .secondary-btn:hover:not(:disabled) { background: var(--cut) !important; }
+
+/* The explanation panel and the quiz footer links. */
+body.dark .explanation { background: var(--cut) !important; border-color: rgba(167,139,250,0.30) !important; }
+body.dark .expl-text { color: var(--ink) !important; }
+body.dark .quiz-foot a, body.dark .quiz-foot { color: var(--clay) !important; }
+
+
+/* The lesson engine uses .option where the quiz uses .option-btn, so the
+   state overrides have to name both or half the product stays broken. */
+body.dark .option { background: var(--cut) !important; border-color: rgba(239,236,251,0.18) !important; color: var(--ink) !important; }
+body.dark .option.selected { background: rgba(167,139,250,0.14) !important; border-color: #C4B5FD !important; }
+body.dark .option.correct {
+  background: rgba(167,139,250,0.20) !important;
+  border-color: #A78BFA !important;
+  color: var(--ink) !important;
+}
+body.dark .option.wrong {
+  background: rgba(167,139,250,0.16) !important;
+  border-color: #C4B5FD !important;
+  color: var(--ink) !important;
+}
+body.dark .option.correct .opt-text,
+body.dark .option.wrong   .opt-text { color: var(--ink) !important; }
+body.dark .option.correct .opt-letter { color: #C4B5FD !important; }
+body.dark .option.wrong   .opt-letter { color: #DAFF8C !important; }
+body.dark .option.dimmed { opacity: 0.72 !important; }
+
+
+/* The toggle is fixed bottom right and lands on the Continue button on a short
+   viewport. Lift it clear and give the page room underneath. */
+.mode-toggle { bottom: 1rem; right: 1rem; }
+body { padding-bottom: 4.5rem !important; }
+@media (max-width: 520px) {
+  .mode-toggle { bottom: 0.7rem; right: 0.7rem; padding: 0.45rem 0.6rem; font-size: 0.6rem; }
+}
+
+
+/* Figures. Captions read left, not centred, and at a measure that holds. */
+.figure figcaption {
+  text-align: left !important;
+  max-width: 34rem;
+  margin-left: auto; margin-right: auto;
+  font-size: 0.84rem !important;
+  color: var(--clay) !important;
+  border-top: 1px solid rgba(154,100,16,0.20);
+  padding-top: 0.6rem;
+}
+.figure img { border: 1px solid rgba(154,100,16,0.30) !important; }
+body.dark .figure img { border-color: rgba(201,255,61,0.30) !important; }
+body.dark .figure figcaption { border-top-color: rgba(201,255,61,0.24); }
+/* An archival photograph should not glare against the dark ground. */
+body.dark .figure img { filter: brightness(0.9) contrast(1.02); }
+
+
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    min-height: 100vh;
+    background:
+      repeating-linear-gradient(90deg, rgba(var(--a1-rgb),0.05) 0 1px, transparent 1px 5px),
+      radial-gradient(ellipse at top right, rgba(var(--a1-rgb),0.10) 0%, transparent 58%),
+      radial-gradient(ellipse at bottom left, rgba(var(--a2-rgb),0.09) 0%, transparent 58%),
+      var(--sand);
+    padding: 1.6rem 1rem 3rem;
+    font-family: var(--serif);
+    color: var(--ink); line-height: 1.6; -webkit-text-size-adjust: 100%;
+    -webkit-user-select: none; user-select: none;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  .top-bar { margin-bottom: 1.6rem; }
+  .top-meta { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--a2); font-weight: 700; margin-bottom: 0.55rem; gap: 0.7rem; flex-wrap: nowrap; }
+  /* Flex children default to min-width auto, so at 360px the eyebrow and the
+     step counter used to overlap. The eyebrow takes the free space and
+     truncates instead of pushing the counter off the row. */
+  .top-meta > * { min-width: 0; }
+  .top-meta #lesson-tag, .top-meta .top-label { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .top-meta .top-count { flex: 0 0 auto; white-space: nowrap; }
+  @media (max-width: 380px) { .top-meta { font-size: 0.62rem; letter-spacing: 0.09em; } }
+  .top-count { color: var(--fade); font-weight: 500; letter-spacing: 0.04em; text-transform: none; }
+  .track { height: 3px; background: var(--hair); overflow: hidden; }
+  .fill { height: 100%; background: var(--a1); transition: width 0.35s ease; width: 0%; }
+
+  /* Cover */
+  .cover { text-align: center; padding: 1.2rem 0 1rem; }
+  .cover-eyebrow { font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--clay); font-weight: 700; margin-bottom: 1.4rem; }
+  .cover-title { font-size: clamp(2.3rem,7vw,3.6rem); font-weight: 800; line-height: 1.03; letter-spacing: -0.025em; margin-bottom: 1.3rem; }
+  .flourish { width: 92px; height: 9px; margin: 0 auto 1.6rem;
+    background:
+      radial-gradient(circle at 9px 4.5px, var(--a1) 0 4px, transparent 4.5px),
+      radial-gradient(circle at 46px 4.5px, var(--a1) 0 4px, transparent 4.5px),
+      radial-gradient(circle at 83px 4.5px, var(--a1) 0 4px, transparent 4.5px); }
+  .cover-line { font-size: 1.16rem; line-height: 1.7; color: var(--muted); font-style: italic; max-width: 30rem; margin: 0 auto 2rem; min-height: 5.5rem; }
+  .cover-line span { opacity: 0; transition: opacity 0.5s ease; }
+  .cover-line span.vis { opacity: 1; }
+  .cover-time { font-family: var(--sans); font-size: 0.8rem; color: var(--fade); margin-top: 1.4rem; letter-spacing: 0.02em; }
+  .btn-begin { font-family: var(--sans); display: inline-flex; align-items: center; gap: 0.8rem; padding: 1.05rem 2.2rem; background: var(--ink); color: var(--on-ink); border: none; cursor: pointer; font-size: 1.12rem; font-weight: 700; }
+  .btn-begin:hover { background: var(--ink-deep); }
+  .btn-begin .sa { color: var(--a1); font-size: 1.3rem; }
+  .skip-link { display: block; margin: 1.6rem auto 0; background: transparent; border: none; color: var(--fade); font-family: var(--sans); font-size: 0.84rem; cursor: pointer; text-decoration: underline; }
+
+  /* Story hook */
+  .story { padding: 0.6rem 0 0.4rem; min-height: 60vh; display: flex; flex-direction: column; justify-content: center; }
+  .story-num { font-family: var(--serif); font-size: clamp(2.6rem,9vw,4rem); font-weight: 800; color: var(--a1); line-height: 1; letter-spacing: -0.02em; }
+  .story-unit { font-family: var(--sans); font-size: 0.82rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fade); font-weight: 700; margin-top: 0.5rem; }
+  .story-rule { width: 100%; height: 1px; background: var(--hair-strong); margin: 1.4rem 0 1.6rem; }
+  .story-line { font-size: 1.24rem; line-height: 1.66; margin-bottom: 1.05rem; opacity: 0; transform: translateY(6px); transition: opacity 0.55s ease, transform 0.55s ease; }
+  .story-line.vis { opacity: 1; transform: translateY(0); }
+  .story-line.last { color: var(--a2); font-style: italic; font-weight: 600; }
+
+  /* Content cards */
+  .card { background: var(--paper); border: 1px solid var(--hair); border-left: 5px solid var(--a1); padding: 1.7rem 1.5rem; margin-bottom: 1.3rem; }
+  .stage-tag { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--clay); font-weight: 700; margin-bottom: 0.9rem; }
+  .card h2 { font-family: var(--sans); font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.9rem; }
+  .card p { font-size: 1.04rem; line-height: 1.74; margin-bottom: 0.9rem; }
+  .card p:last-child { margin-bottom: 0; }
+  .key { color: var(--a2); font-weight: 700; }        /* one emphasis colour, body face kept */
+  .card strong { color: var(--a2); font-weight: 700; }
+  .pull { border-left: 4px solid var(--a2); padding: 0.15rem 0 0.15rem 1rem; font-weight: 600; color: var(--ink); margin: 1.15rem 0; font-style: italic; }
+  .figure { margin: 1rem 0 0.3rem; }
+  .figure img { display: block; height: auto; border: 1px solid var(--hair-strong); margin: 0 auto; }
+  .figure.wide img { width: 100%; max-width: 460px; }
+  .figure.portrait img { width: 100%; max-width: 320px; }
+  .figure figcaption { font-family: var(--serif); font-size: 0.82rem; color: var(--fade); margin-top: 0.5rem; line-height: 1.55; text-align: center; }
+
+  /* Carousel */
+  .car-wrap { margin: 0.4rem 0 0; }
+  .car-prompt { font-family: var(--sans); font-size: 0.82rem; color: var(--a2); font-weight: 700; margin-bottom: 0.8rem; }
+  .car-frame { background: var(--cut); border: 1px solid var(--hair); border-top: 3px solid var(--a1); padding: 1.4rem 1.35rem; min-height: 8.5rem; display: flex; align-items: center; }
+  .car-card { font-size: 1.06rem; line-height: 1.7; width: 100%; }
+  .car-card .cc-lead { font-family: var(--sans); font-weight: 700; font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--clay); display: block; margin-bottom: 0.5rem; }
+  .car-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 0.9rem; gap: 1rem; }
+  .car-dots { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .car-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--hair-strong); }
+  .car-dot.read { background: var(--a2); }
+  .car-dot.here { outline: 2px solid var(--a1); outline-offset: 2px; }
+  .car-count { font-family: var(--sans); font-size: 0.78rem; color: var(--fade); font-weight: 600; }
+  .car-btns { display: flex; gap: 0.5rem; }
+  .car-btn { font-family: var(--sans); width: 2.4rem; height: 2.4rem; background: var(--paper); border: 1px solid var(--hair-strong); color: var(--ink); font-size: 1.1rem; cursor: pointer; }
+  .car-btn:disabled { opacity: 0.32; cursor: not-allowed; }
+
+  /* Stat strip */
+  .stat-strip { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 0.8rem; margin: 0.5rem 0 0.2rem; }
+  .stat { background: var(--cut); border: 1px solid var(--hair); border-top: 3px solid var(--a2); padding: 1.1rem 0.7rem; text-align: center; }
+  .stat-num { font-family: var(--serif); font-size: 2rem; font-weight: 800; color: var(--a2); line-height: 1; letter-spacing: -0.02em; }
+  .stat-label { font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--fade); margin-top: 0.5rem; line-height: 1.4; }
+
+  /* Key terms + memory boxes (collapsed) */
+  /* Key terms strip: label + individual expandable chips */
+  .kt { margin-top: 1.3rem; }
+  .kt-label { font-family: var(--sans); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--a1); padding-top: 0.85rem; border-top: 1px dashed var(--hair-strong); }
+  .kt-row { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.85rem; }
+  .kt-term { border: 1px solid var(--hair-strong); background: transparent; }
+  .kt-term summary { font-family: var(--sans); font-size: 0.92rem; font-weight: 600; color: var(--ink); cursor: pointer; list-style: none; padding: 0.55rem 0.85rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .kt-term summary::-webkit-details-marker { display: none; }
+  .kt-term summary::after { content: "+"; color: var(--a1); font-weight: 800; font-size: 1.05rem; }
+  .kt-term[open] { display: block; width: 100%; }
+  .kt-term[open] summary::after { content: "\2212"; }
+  .kt-def { font-size: 0.94rem; line-height: 1.62; color: var(--muted); padding: 0 0.85rem 0.75rem; }
+
+  /* Remember box (collapsed) */
+  .remember { margin-top: 0.9rem; border-top: 1px dashed var(--hair-strong); padding-top: 0.7rem; }
+  .remember summary { font-family: var(--sans); font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; color: var(--a1); cursor: pointer; list-style: none; }
+  .remember summary::-webkit-details-marker { display: none; }
+  .remember summary::before { content: "+ "; font-weight: 800; }
+  .remember[open] summary::before { content: "\2212 "; }
+  .remember .disc-body { font-size: 0.96rem; line-height: 1.68; color: var(--muted); margin-top: 0.6rem; background: rgba(var(--a2-rgb),0.06); border-left: 3px solid var(--a2); padding: 0.7rem 0.9rem; }
+
+  /* Sources */
+  .source { position: relative; background: var(--cut); border: 1px solid var(--hair); border-top: 3px solid var(--a2); box-shadow: 6px 6px 0 rgba(var(--a2-rgb),0.13); padding: 1.2rem 1.3rem; margin: 1.15rem 0 1.6rem; }
+  .source-attr { font-family: var(--sans); font-size: 0.8rem; color: var(--clay); font-weight: 600; margin-bottom: 0.75rem; line-height: 1.5; }
+  .source-body { font-size: 1.02rem; line-height: 1.74; }
+  .source-body em { color: var(--a2); font-style: italic; }
+  .toggle-btn { font-family: var(--sans); background: transparent; border: none; color: var(--a1); cursor: pointer; font-size: 0.88rem; font-weight: 600; text-decoration: underline; padding: 0.7rem 0 0; }
+  .toggle-body { display: none; margin-top: 0.7rem; padding-top: 0.7rem; border-top: 1px dashed var(--hair-strong); font-size: 0.94rem; color: var(--muted); line-height: 1.66; }
+  .toggle-body.open { display: block; }
+
+  /* Questions */
+  .q-text { font-size: 1.16rem; line-height: 1.5; font-weight: 600; margin-bottom: 1.2rem; }
+  .options { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.2rem; }
+  .option { display: flex; align-items: flex-start; gap: 0.85rem; padding: 1rem 1.05rem; background: var(--sand); border: 1px solid var(--hair); cursor: pointer; font-family: var(--serif); text-align: left; font-size: 0.99rem; line-height: 1.55; color: var(--ink); width: 100%; }
+  .option:hover:not(:disabled) { background: var(--cut); border-color: var(--a1); }
+  .option:disabled { cursor: default; }
+  .option.selected { background: var(--cut); border-color: var(--a1); border-width: 2px; padding: 0.94rem 0.99rem; }
+  .option.correct { background: var(--ok-bg); border-color: var(--a2); border-width: 2px; padding: 0.94rem 0.99rem; }
+  .option.wrong { background: var(--no-bg); border-color: var(--clay); border-width: 2px; padding: 0.94rem 0.99rem; }
+  .option.dimmed { opacity: 0.46; }
+  body.dark .option.dimmed { opacity: 0.72; }
+  .opt-letter { font-family: var(--serif); font-weight: 800; color: var(--a1); min-width: 1.1rem; }
+  .opt-text { flex: 1; }
+  .opt-mark { font-weight: 700; font-size: 1.1rem; }
+  .explanation { background: var(--cut); border: 1px solid var(--hair); border-left: 5px solid var(--a2); padding: 1.15rem 1.2rem; }
+  .expl-label { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--a2); font-weight: 700; margin-bottom: 0.5rem; }
+  .expl-text { line-height: 1.7; font-size: 0.96rem; }
+  .chip { display: inline-block; font-family: var(--sans); padding: 0.22rem 0.65rem; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+  .chip-a { background: var(--chip-a-bg); color: var(--chip-a-fg); }
+  .chip-b { background: var(--chip-a-bg); color: var(--chip-a-fg); }
+  .chip-c { background: var(--a2); color: var(--on-a2); }
+  .chip-a { background: var(--chip-a-bg); color: var(--chip-a-fg); }
+  .chip-b { background: var(--chip-b-bg); color: var(--chip-b-fg); }
+  .chip-d { background: var(--a2); color: var(--on-a2); }
+  .chip-instinct { background: var(--chip-c-bg); color: var(--clay); }
+
+  /* Reopen the source from inside a question */
+  .srcpeek { border: 1px solid var(--clay); background: rgba(var(--a1-rgb),0.07); margin: 0 0 1rem; }
+  .srcpeek summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 0.7rem; padding: 0.8rem 0.85rem; color: var(--clay); }
+  .srcpeek summary::-webkit-details-marker { display: none; }
+  .srcpeek .chev { flex: 0 0 auto; transition: transform 0.18s ease; }
+  .srcpeek[open] .chev { transform: rotate(90deg); }
+  .srcpeek .peek-cue { font-family: var(--sans); font-size: 0.92rem; font-weight: 700; line-height: 1.25; color: var(--ink); }
+  .srcpeek .peek-who { display: block; font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 400; color: var(--muted); margin-top: 0.25rem; }
+  .srcpeek[open] .peek-cue { color: var(--muted); }
+  .srcpeek .peek-body { padding: 0 0.85rem 0.85rem; font-size: 0.94rem; line-height: 1.62; border-top: 1px solid var(--rule); margin: 0 0.85rem; padding-left: 0; padding-right: 0; }
+  .srcpeek .peek-body p { margin: 0.7rem 0 0; }
+
+  /* v2.1 multi-source reopen. Tabs plus a swipeable track, so every source in
+     the file is reachable from any question. Absent on a single-source lesson,
+     which renders exactly as it did before. */
+  .srcpeek.multi .peek-body { padding-bottom: 0.5rem; }
+  .peek-tabs { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.7rem 0 0.6rem;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .peek-tabs::-webkit-scrollbar { display: none; }
+  .peek-tab { flex: 0 0 auto; min-height: 40px; padding: 0.45rem 0.85rem;
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; cursor: pointer;
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--rule); border-radius: 0; }
+  .peek-tab.on { background: var(--a1); color: var(--on-a1); border-color: var(--a1); }
+  .peek-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 0; }
+  .peek-track::-webkit-scrollbar { display: none; }
+  .peek-slide { flex: 0 0 100%; scroll-snap-align: start; padding-right: 0.1rem; }
+  .peek-slide .peek-attr { font-family: var(--sans); font-size: 0.66rem; font-weight: 700;
+    line-height: 1.45; color: var(--muted); padding-bottom: 0.5rem; margin-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule); }
+  .peek-slide p { margin: 0.7rem 0 0; }
+  .srcpeek.multi::after { content: "Swipe, or tap a source above."; display: block;
+    font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.06em; color: var(--muted);
+    padding: 0.55rem 0 0.2rem; }
+  .srcpeek.multi:not([open])::after { display: none; }
+
+  .marks { font-family: var(--mono, var(--sans)); font-size: 0.68rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--a1); font-weight: 700; margin-left: 0.7rem; }
+  .q-meta { margin-bottom: 0.9rem; }
+
+  /* order + sort interactions */
+  .inter { margin: 0.4rem 0 1rem; }
+  .inter-pool { display: flex; flex-direction: column; gap: 0.5rem; }
+  .inter-item { font-family: var(--serif); text-align: left; padding: 0.85rem 1rem; background: var(--sand); border: 1px solid var(--hair); cursor: pointer; font-size: 0.97rem; line-height: 1.5; color: var(--ink); display: flex; gap: 0.7rem; align-items: baseline; }
+  .inter-item:hover:not(:disabled) { border-color: var(--a1); background: var(--cut); }
+  .inter-item .rank { font-family: var(--sans); font-weight: 800; color: var(--a1); min-width: 1.4rem; }
+  .inter-placed { background: var(--cut); border-color: var(--a2); }
+  .inter-item.ok { background: var(--ok-bg); border-color: var(--a2); }
+  .inter-item.no { background: var(--no-bg); border-color: var(--clay); }
+  .sort-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .sort-col { background: var(--inset); border: 1px dashed var(--hair-strong); padding: 0.7rem; min-height: 4rem; }
+  .sort-col h4 { font-family: var(--sans); font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--clay); font-weight: 700; margin-bottom: 0.6rem; text-align: center; }
+  .sort-btns { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
+  .sort-place { font-family: var(--sans); flex: 1; font-size: 0.78rem; font-weight: 700; padding: 0.4rem; background: var(--paper); border: 1px solid var(--hair-strong); cursor: pointer; color: var(--ink); }
+
+  /* Running summary */
+  .runsum { background: rgba(var(--a2-rgb),0.08); border: 1px solid rgba(var(--a2-rgb),0.28); border-left: 5px solid var(--a2); padding: 1.3rem 1.4rem; }
+  .runsum-label { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--a2); font-weight: 700; margin-bottom: 0.9rem; }
+  .runsum ol { margin: 0; padding-left: 1.3rem; }
+  .runsum li { font-size: 1.02rem; line-height: 1.66; margin-bottom: 0.7rem; color: var(--ink); }
+  .runsum li:last-child { margin-bottom: 0; }
+  .runsum li.fresh { font-weight: 700; color: var(--a2); }
+
+  /* Popup */
+  .pop-back { position: fixed; inset: 0; background: var(--scrim); display: flex; align-items: center; justify-content: center; padding: 1.5rem; z-index: 50; }
+  .pop { background: var(--paper); border-top: 5px solid var(--a2); padding: 1.6rem 1.5rem; max-width: 30rem; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .pop-label { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--a2); font-weight: 700; margin-bottom: 0.8rem; }
+  .pop-text { font-size: 1.1rem; line-height: 1.6; font-weight: 600; color: var(--ink); margin-bottom: 1.3rem; }
+  .pop-btn { font-family: var(--sans); width: 100%; padding: 0.9rem; background: var(--a2); border: none; color: var(--on-a2); font-size: 0.98rem; font-weight: 700; cursor: pointer; }
+
+  /* Nav */
+  .nav { display: flex; justify-content: space-between; gap: 0.8rem; margin-top: 1rem; }
+  .btn-secondary { font-family: var(--sans); padding: 0.8rem 1.2rem; background: transparent; border: 1px solid var(--hair-strong); color: var(--ink); font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-secondary:hover:not(:disabled) { background: var(--paper); }
+  .btn-primary { font-family: var(--sans); padding: 0.85rem 1.5rem; background: var(--a2); border: none; color: var(--on-a2); font-size: 0.95rem; cursor: pointer; font-weight: 700; }
+  .btn-primary:hover:not(:disabled) { background: var(--a2-deep); }
+  .btn-primary:disabled { opacity: 0.34; cursor: not-allowed; }
+
+  /* Results */
+  .results-head { text-align: center; margin-bottom: 1.8rem; }
+  .results-eyebrow { font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--clay); font-weight: 700; margin-bottom: 0.8rem; }
+  .results-title { font-family: var(--sans); font-size: clamp(1.9rem,5.5vw,2.7rem); font-weight: 800; letter-spacing: -0.02em; }
+  .score-row { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 0.9rem; margin-bottom: 1.4rem; }
+  .score-block { background: var(--paper); border: 1px solid var(--hair); border-top: 4px solid var(--a1); padding: 1.3rem 0.8rem; text-align: center; }
+  .score-num { font-family: var(--serif); font-size: 2.6rem; font-weight: 800; color: var(--ink); line-height: 1; letter-spacing: -0.03em; }
+  .score-den { font-family: var(--serif); font-size: 1.1rem; color: var(--fade); font-weight: 500; }
+  .score-word { font-family: var(--serif); font-size: 1.3rem; font-weight: 800; color: var(--a2); line-height: 2; }
+  .score-label { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--fade); margin-top: 0.5rem; font-weight: 700; }
+  .grade-desc { text-align: center; margin-bottom: 1.6rem; padding: 0 0.5rem; line-height: 1.66; }
+  .breakdown { background: var(--paper); border: 1px solid var(--hair); padding: 1.3rem; margin-bottom: 1.4rem; }
+  .breakdown-label { font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--a2); font-weight: 700; margin-bottom: 1rem; text-align: center; }
+  .bd-row { display: grid; grid-template-columns: 1fr 110px 46px; gap: 0.7rem; align-items: center; margin-bottom: 0.7rem; font-family: var(--serif); font-size: 0.9rem; }
+  .bd-name { font-weight: 600; }
+  .bd-bar { height: 9px; background: var(--hair); overflow: hidden; }
+  .bd-fill { height: 100%; background: var(--a2); }
+  .bd-score { color: var(--fade); text-align: right; font-weight: 700; }
+  .results-actions { display: flex; gap: 0.8rem; margin-top: 1.6rem; }
+  .results-actions button { flex: 1; }
+  .hidden { display: none !important; }
+
+
+/* ============================================================
+   MOBILE. Added August 2026.
+   Everything here is inside a narrow-screen query except the tap
+   target floor, which applies at every width because a 44px
+   target is not worse on a desktop. Nothing above 560px changes.
+   ============================================================ */
+
+/* Tap targets. Anything a learner presses is at least 44px tall,
+   which is the smallest reliable target for a thumb. */
+.btn-primary, .btn-secondary, .btn-small, .btn-skip, .btn-begin,
+.term-btn, .toggle-btn, .option, .ord-chip, .ord-slot, .sort-tag,
+.mode-toggle, #kula-mode-toggle, button.go, .opt, .chip[role="button"],
+.tglr, .termsbtn, .kt-term {
+  min-height: 44px;
+}
+
+@media (max-width: 560px) {
+  /* the page gutter takes width the text needs more than the margin does */
+  body { padding-left: 0.75rem; padding-right: 0.75rem; }
+
+  /* two sort columns at 360px leave about 135px each, which is
+     narrower than the sentences that go in them */
+  .sort-cols, .bins { grid-template-columns: 1fr; }
+
+  /* the results breakdown keeps its three columns and gives the
+     label more of them */
+  .bd-row      { grid-template-columns: 1fr 72px 38px; gap: 0.5rem; font-size: 0.8rem; }
+  .breakdown-row { grid-template-columns: 1fr 68px 36px; gap: 0.5rem; font-size: 0.8rem; }
+  .marked      { grid-template-columns: 1fr; }
+
+  /* two buttons plus a gap can exceed the line, so let them wrap
+     and fill instead of overflowing */
+  .nav, .cap-actions, .actions { flex-wrap: wrap; }
+  .nav > *, .cap-actions > *, .actions > * { flex: 1 1 auto; }
+
+  /* display type set for a laptop is too large for a phone */
+  .cover-title { font-size: 2rem; line-height: 1.12; }
+  .story-num   { font-size: 2.6rem; }
+  h1 { font-size: 1.75rem; line-height: 1.18; }
+  h2 { font-size: 1.3rem; line-height: 1.25; }
+
+  /* card padding on top of body padding leaves too little for text */
+  .card, .sheet, .sleeve, .source { padding-left: 1rem; padding-right: 1rem; }
+
+  /* long attributions and quoted lines must not push the page sideways */
+  .attr, .source-attr, .src-attr, blockquote, pre { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 400px) {
+  .bd-row      { grid-template-columns: 1fr 56px 34px; font-size: 0.76rem; }
+  .breakdown-row { grid-template-columns: 1fr 54px 32px; font-size: 0.76rem; }
+  .cover-title { font-size: 1.7rem; }
+  .story-num   { font-size: 2.2rem; }
+}
+
+/* Correct and wrong are coded green and red, below the identity accent.
+   Before this, dark mode marked correct in violet and wrong in lime, so the
+   two states read as the same colour family. Ticks and crosses already exist
+   in the markup, so the coding does not rest on colour alone. */
+:root{ --ok:#0F6B3F; --ok-tint:#E6F3EA; --no:#C1121F; --no-tint:#FBE3E4; }
+body.dark{ --ok:#6EDA9B; --ok-tint:#12301F; --no:#FF6B5E; --no-tint:#3A1512; }
+.option.correct, .option-btn.correct,
+body.dark .option.correct, body.dark .option-btn.correct{
+  background:var(--ok-tint) !important; border-color:var(--ok) !important; border-width:2px !important; }
+.option.wrong, .option-btn.wrong,
+body.dark .option.wrong, body.dark .option-btn.wrong{
+  background:var(--no-tint) !important; border-color:var(--no) !important; border-width:2px !important; }
+.option.correct .opt-letter, .option.correct .opt-mark,
+.option-btn.correct .opt-letter, .option-btn.correct .opt-mark,
+body.dark .option.correct .opt-letter, body.dark .option.correct .opt-mark,
+body.dark .option-btn.correct .opt-letter, body.dark .option-btn.correct .opt-mark{
+  color:var(--ok) !important; font-weight:800 !important; }
+.option.wrong .opt-letter, .option.wrong .opt-mark,
+.option-btn.wrong .opt-letter, .option-btn.wrong .opt-mark,
+body.dark .option.wrong .opt-letter, body.dark .option.wrong .opt-mark,
+body.dark .option-btn.wrong .opt-letter, body.dark .option-btn.wrong .opt-mark{
+  color:var(--no) !important; font-weight:800 !important; }
+.option.correct .opt-text, .option.wrong .opt-text,
+body.dark .option.correct .opt-text, body.dark .option.wrong .opt-text{ color:var(--ink) !important; }
+.explanation.ok, body.dark .explanation.ok{
+  background:var(--ok-tint) !important; border-color:var(--ok) !important; border-left-color:var(--ok) !important; }
+.explanation.no, body.dark .explanation.no{
+  background:var(--no-tint) !important; border-color:var(--no) !important; border-left-color:var(--no) !important; }
+.explanation.ok .expl-label, body.dark .explanation.ok .expl-label{ color:var(--ok) !important; }
+.explanation.no .expl-label, body.dark .explanation.no .expl-label{ color:var(--no) !important; }
+</style>
+</head>
+<body>
+<script>
+window.kulaEmbed = (function(){
+  var sentCompleted = false;
+  return function(ev){
+    if(ev === "completed"){ if(sentCompleted) return; sentCompleted = true; }
+    try{
+      window.parent.postMessage({type:"lms-embed-event",version:"1.0",payload:{event:ev}}, "*");
+    }catch(e){}
+  };
+})();
+</script>
+
+<div class="container">
+  <div class="top-bar hidden" id="top-bar">
+    <div class="top-meta"><span id="lesson-tag">Kula Revise &middot; Grade 12 &middot; Angola</span><span class="top-count" id="step-count"></span></div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+  <div id="stage"></div>
+  <div class="nav hidden" id="nav">
+    <button class="btn-secondary" id="back-btn">&larr; Back</button>
+    <button class="btn-primary" id="next-btn">Continue &rarr;</button>
+  </div>
+</div>
+
+<script>
+/* kula: re-entry guard. Every declaration below is function scoped, so a
+   viewer that re-runs this script re-initialises instead of throwing a
+   redeclaration SyntaxError and leaving FLOW undefined. */
+(function(){
+const COVER = {
+  "eyebrow": "Kula Revise &middot; Grade 12 History &middot; Angola",
+  "title": "The Battle Both Sides Won",
+  "lines": [
+    "Cuito Cuanavale, 1987 and 1988.",
+    "Pretoria called it a victory. Mandela called it the turning point.",
+    "Neither of them was lying."
+  ],
+  "begin": "Begin Lesson 4",
+  "time": "About 25 minutes. Lesson 4 of 5.",
+  "skip": true
+};
+
+const RESULTS = {
+  "eyebrow": "Lesson 4 report",
+  "title": "Where you stand",
+  "done": {
+    "label": "Lesson complete",
+    "title": "The Battle Both Sides Won",
+    "text": "Tap Done to continue to Lesson 5, Putting It Together."
+  },
+  "footer": "Next: Lesson 5, the full question shape with a paragraph at the end.",
+  "bands": {
+    "excellent": "You can judge two claims about one event and commit to an answer. Go on to Lesson 5.",
+    "strong": "Solid. Reread the two verdicts on Cuito Cuanavale, then go on to Lesson 5.",
+    "solid": "You've got the events. Go back over the limitations questions before Lesson 5.",
+    "patchy": "Worth another run. Lesson 5 asks you to write the paragraph this lesson has been preparing.",
+    "start": "Take it again from the top. The whole unit closes here, and Lesson 5 builds on it."
+  }
+};
+
+const FLOW = [
+  {
+    "type": "story",
+    "marker": "1988",
+    "markerLabel": "South-east Angola &middot; the dry season",
+    "lines": [
+      "A soldier is dug in outside a small town in the south-east of Angola.",
+      "He can tell you what was shelled, on which day, and how close it landed.",
+      "He cannot tell you what those months were costing the government in Pretoria.",
+      "Nobody was shelling Pretoria.",
+      "He is not wrong about anything. There are simply things he could not see from where he lay."
+    ]
+  },
+  {
+    "type": "question",
+    "kind": "instinct",
+    "q": "The soldier's account is honest and detailed. What is it still unable to give you?",
+    "options": [
+      "Anything about how the war looked to the governments involved",
+      "Any reliable detail about the fighting he took part in himself",
+      "The names of the units that were positioned around the town",
+      "A sense of how long the fighting outside the town lasted"
+    ],
+    "correct": 0,
+    "explanation": "He is a strong source for the things he stood among, and no source at all for the room where the decisions were taken. That gap is not a fault in him, and a better memory would not close it. Ask the same question of any memoir. Where was this person standing, and what does that put beyond their reach? Skip it and you will treat a good witness as a witness to everything.",
+    "noSource": true
+  },
+  {
+    "type": "question",
+    "kind": "instinct",
+    "noSource": true,
+    "q": "A historian wants to know why the fighting around the town mattered. Who else do they need?",
+    "options": [
+      "Someone who was in the meetings where the next move was decided",
+      "More soldiers, so that the accounts can be checked against each other",
+      "A photographer who was present during the heaviest of the shelling",
+      "An officer who commanded on the ground for the whole campaign"
+    ],
+    "correct": 0,
+    "explanation": "Adding more people who stood in the same place gives you a better picture of that place and no more than that. Option {opt1} is what most people reach for, and ten soldiers still cannot see into a cabinet room. To answer why it mattered, you need somebody who was standing somewhere else entirely."
+  },
+  {
+    "type": "content",
+    "tag": "The turn",
+    "html": "<h2>Limitations</h2><p>A limitation isn't a mistake in a source. It's the thing the source was never in a position to tell you.</p><p>A general's memoir knows what his own forces did. It can't tell you what the fighting did to a government's confidence, because that wasn't visible from where he stood.</p><p>The IEB asks it like this: <em>Explain two limitations of Source A for history students studying the Angolan Civil War.</em> Four marks, which is two limitations at two marks each.</p><p>Two is the number, and it is not negotiable. One limitation explained beautifully is half an answer.</p>",
+    "remember": "Two limitations, two marks each. What the source could not see, not what it got wrong.",
+    "terms": [
+      {
+        "term": "Limitation",
+        "def": "What a source was never placed to tell you. Not the same as an error, and the exam wants you to know the difference."
+      },
+      {
+        "term": "Detente",
+        "def": "A thaw between the superpowers, easing tension without ending rivalry. It framed the late 1980s and helped the Angola talks happen."
+      }
+    ]
+  },
+  {
+    "type": "content",
+    "tag": "The other half",
+    "html": "<h2>A source is useful and not useful in the same answer</h2><p>When a question asks how useful a source is, it wants both directions. Answer one side only and you have given a marker half of what the question asked for.</p><p><strong>Useful:</strong> what does this let a historian see that they would not otherwise have?</p><p><strong>Not useful:</strong> what does it leave out, and what would you have to go elsewhere to find?</p><p>Photographs have their own version of this, and Paper 2 opens with a visual source. A photograph is evidence that something looked a certain way at one moment. It carries the photographer's angle, it comes with no historical context attached, and it can't tell you what happened before or after the shutter.</p><p>None of that is a reason to distrust a photograph. It's the shape of what you're allowed to ask it.</p>",
+    "remember": "Useful and not useful, in the same answer. For a photograph: one moment, one angle, no context.",
+    "terms": [
+      {
+        "term": "Usefulness",
+        "def": "What a source lets a historian see, and what it leaves out. An IEB usefulness answer has to do both halves, whatever the source."
+      }
+    ]
+  },
+  {
+    "type": "question",
+    "level": "Evaluate",
+    "marks": "Practice",
+    "q": "A question asks how useful a South African military photograph from 1978 is to a historian of the war. What does a full answer do?",
+    "options": [
+      "Says what it shows a historian, and what it leaves out.",
+      "Says the photograph is unreliable because it was made as propaganda.",
+      "Describes what is visible in the photograph in careful detail.",
+      "Judges whether the photograph is more useful than a memoir."
+    ],
+    "correct": 0,
+    "explanation": "A usefulness answer needs both halves, whatever the source. Option {opt1} decides the photograph is worthless, and that throws away real evidence of what the army wanted people to see. Option {opt2} describes without judging. Option {opt3} answers a comparison nobody asked for. Give one half and you have given a marker half an answer."
+  },
+  {
+    "type": "content",
+    "tag": "The evidence",
+    "html": "<h2>The twelve years in between</h2><p>South African forces pulled back in March 1976, and the Security Council condemned the invasion. The war did not stop.</p><p>Through the 1980s Pretoria backed UNITA and raided Angola repeatedly, while Cuban troops stayed on. The fighting became less like a civil war and more like two armies.</p><figure class=\"figure wide\"><img alt=\"Map of Angola marking South African Defence Force operations between 1978 and 1981, running north from the Namibian border towards Lubango, Cassinga and Menongue.\" src=\"data:image/png;base64,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\"><figcaption>South African operations inside Angola between 1978 and 1981, reaching as far north as Cassinga. The map was drawn in 2007, so it is a modern map of the period rather than a document from it. The dates matter because they sit between the invasion of 1975 and Cuito Cuanavale in 1987. These are the years South Africa was in Angola almost continuously. Labels in Spanish; acciones sudafricanas means South African actions. Map by Ceresnet, Wikimedia Commons, CC BY-SA 2.5.</figcaption></figure>",
+    "terms": [
+      {
+        "term": "Brinkmanship",
+        "def": "Pushing a confrontation close to war to force the other side to give way. Both blocs did it in southern Africa through the 1980s."
+      },
+      {
+        "term": "Destabilisation",
+        "def": "Deliberately wrecking a neighbouring state's economy and security so it can't support your opponents."
+      },
+      {
+        "term": "Proxy war",
+        "def": "Outside powers fighting each other through local forces rather than directly."
+      }
+    ]
+  },
+  {
+    "type": "stat",
+    "tag": "The cost to the region",
+    "heading": "What the war did outside Angola's borders",
+    "lead": "<p>Estimates from the Southern African Development Co-ordination Conference, a regional body opposed to Pretoria. Say where they came from when you use them.</p>",
+    "stats": [
+      {
+        "num": "$10bn",
+        "label": "estimated cost of destabilisation across the region, 1980 to 1984"
+      },
+      {
+        "num": "$35bn",
+        "label": "estimated total by 1988"
+      },
+      {
+        "num": "3 million",
+        "label": "Angolans driven from their homes"
+      }
+    ],
+    "terms": [
+      {
+        "term": "SADCC",
+        "def": "The Southern African Development Co-ordination Conference: nine states co-ordinating to reduce their dependence on South Africa."
+      }
+    ]
+  },
+  {
+    "type": "stat",
+    "tag": "What it cost Angola",
+    "heading": "The war inside the country, 1974 to 1989",
+    "lead": "<p>The regional figures on the last screen are about Angola's neighbours. These are about Angola.</p>",
+    "stats": [
+      {
+        "num": "1.1m",
+        "label": "Angolan civilians killed across the years of fighting"
+      },
+      {
+        "num": "15 years",
+        "label": "of war, from the outbreak in 1974 to the accords"
+      },
+      {
+        "num": "Decades",
+        "label": "of landmine injuries, long after the fighting stopped"
+      }
+    ],
+    "terms": [
+      {
+        "term": "Landmine",
+        "def": "A buried explosive that stays armed after a war ends. Angola was one of the most heavily mined countries in the world, and people were still losing limbs to them in the 2000s."
+      }
+    ]
+  },
+  {
+    "type": "content",
+    "tag": "The evidence",
+    "html": "<h2>How a long war paid for itself</h2><p>Wars need money. The MPLA government leaned on Angola's oil, most of it offshore at Cabinda, and the revenue went on defence rather than on rebuilding.</p><p>UNITA had no state to tax, so Savimbi sold what the land held: diamonds, and ivory from elephants killed for the purpose. Both sides could keep fighting because both sides had something to sell.</p><p>That is why the fighting outlasted the Cold War that started it. When the outside powers went home in 1988 and 1989, the money did not.",
+    "remember": "Oil funded one side, diamonds and ivory the other. That's why the war outlived the Cold War.",
+    "terms": [
+      {
+        "term": "Conflict resource",
+        "def": "Something a side sells to pay for its own war: oil, diamonds, ivory. It lets a war continue after outside backers withdraw."
+      }
+    ]
+  },
+  {
+    "type": "content",
+    "tag": "The evidence",
+    "html": "<h2>Cuito Cuanavale, 1987 to 1988</h2><p>In the south-east, South African and UNITA forces fought Angolan and Cuban forces around the town of Cuito Cuanavale across 1987 and into 1988. Neither side took it.</p><p>What followed was a settlement: Cuban troops out of Angola, South Africa out of Namibia, and Namibian independence in 1990.</p><figure class=\"figure wide\"><img alt=\"The town hall at Cuito Cuanavale, a low white colonial building with two arches, its facade pitted with damage, two flags flying from the roof and red earth in front of it.\" src=\"data:image/jpeg;base64,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\"><figcaption>The town hall at Cuito Cuanavale, photographed in autumn 1998, ten years after the fighting. The date matters twice over. The damage is still in the walls a decade later, and the town itself never changed hands. What the battle decided was settled elsewhere, in Namibia and in the withdrawal agreements. Photograph by Carlos71, Wikimedia Commons, CC BY-SA 2.5. Resized for this lesson.</figcaption></figure>",
+    "terms": [
+      {
+        "term": "Cuito Cuanavale",
+        "def": "A town in south-east Angola, and the battle of 1987 to 1988 fought around it. Both sides claimed it, which is why it's examinable."
+      },
+      {
+        "term": "Conventional war",
+        "def": "Regular armies with tanks and artillery facing each other, as opposed to guerrilla fighting."
+      },
+      {
+        "term": "Tripartite Accord",
+        "def": "The 1988 agreement between Angola, Cuba and South Africa: Cuban troops out of Angola, South Africa out of Namibia."
+      }
+    ]
+  },
+  {
+    "type": "question",
+    "level": "Comprehend",
+    "mode": "order",
+    "q": "Put these four events in the order they happened.",
+    "items": [
+      "Namibia becomes independent",
+      "South African forces withdraw from Angola for the first time",
+      "The fighting around Cuito Cuanavale",
+      "Cuban forces first enter Angola"
+    ],
+    "answer": [
+      3,
+      1,
+      2,
+      0
+    ],
+    "explanation": "November 1975, March 1976, 1987 to 1988, then 1990. Keep the twelve years that pass between the first withdrawal and the battle. Compress them and the war looks like one continuous push, which it was not. You would then explain Cuito Cuanavale as the end of the 1975 invasion rather than as a separate war.",
+    "noSource": true,
+    "marks": "Practice"
+  },
+  {
+    "type": "content",
+    "tag": "Two verdicts",
+    "html": "<h2>One battle, judged twice</h2><p><strong>Magnus Malan</strong>, South Africa's Minister of Defence, measured the campaign by ground held and losses inflicted. By that measure the South African Defence Force wasn't beaten in the field, and Cuito Cuanavale itself never fell.</p><p><strong>Nelson Mandela</strong> measured it by what it did to the apartheid state. The hold on Namibia was given up, and the fighting told people at home that the state could be beaten.</p><p>Neither is inventing anything. They're counting different things, which is why both accounts survive.</p>",
+    "remember": "Malan counts ground. Mandela counts consequences. Same battle, different yardstick."
+  },
+  {
+    "type": "question",
+    "level": "Analyse",
+    "q": "What is Malan measuring when he calls the campaign a victory?",
+    "options": [
+      "Ground held and losses inflicted on the forces opposite",
+      "The number of countries that then recognised South Africa",
+      "How quickly Cuban forces left Angola after the fighting",
+      "The share of Angola's oil revenue South Africa gained"
+    ],
+    "correct": 0,
+    "explanation": "A defence minister counts ground and casualties, and by that count his claim holds up. But option {opt2} came later and was a consequence, not a measure. Name the yardstick someone is using before you agree or disagree, or you argue against a claim they never made.",
+    "noSource": true,
+    "marks": "4 marks"
+  },
+  {
+    "type": "question",
+    "level": "Analyse",
+    "q": "What is Mandela measuring when he calls it a turning point?",
+    "options": [
+      "What the fighting did to the apartheid state's position",
+      "How many soldiers South Africa lost in the fighting",
+      "How much territory the Angolan government took back",
+      "How fast the United Nations condemned South Africa"
+    ],
+    "correct": 0,
+    "explanation": "He's measuring political effect: Namibia lost, and the apartheid state shown to be beatable. But option {opt1} is Malan's yardstick, not his. Two people counting different things reach different verdicts without either being wrong. Leave your yardstick unnamed and your verdict has nothing to stand on.",
+    "noSource": true,
+    "marks": "4 marks"
+  },
+  {
+    "type": "question",
+    "level": "Comprehend",
+    "q": "What did the settlement that followed Cuito Cuanavale provide for?",
+    "options": [
+      "Cuban withdrawal from Angola and South African withdrawal from Namibia",
+      "An immediate end to all fighting between the government and UNITA",
+      "Soviet withdrawal from Angola and the return of Portuguese rule",
+      "Namibian independence and the surrender of UNITA to the MPLA"
+    ],
+    "correct": 0,
+    "explanation": "Two withdrawals traded against each other, and Namibian independence out of it in 1990. But option {opt1} is the one to watch, because it's what you'd assume a peace deal means. Angola's own war ran on to 2002. Merge the two and you credit the settlement with ending a war that continued for another twelve years.",
+    "noSource": true,
+    "marks": "4 marks"
+  },
+  {
+    "type": "question",
+    "level": "Comprehend",
+    "marks": "Practice",
+    "q": "Malan and Mandela both describe Cuito Cuanavale. What do their two accounts agree on?",
+    "options": [
+      "That a major battle was fought there, and that it mattered.",
+      "That South African forces were defeated there on the open battlefield.",
+      "That the fighting ended the war in Angola within a few weeks.",
+      "That Cuban forces took the town and held it long afterwards."
+    ],
+    "correct": 0,
+    "explanation": "Before you say how two sources differ, say where they meet. Both men treat the battle as significant, and neither disputes that it happened. Option {opt1} is what Mandela argues and Malan denies. Put that in the agreement column and you have handed away the disagreement you were about to write about."
+  },
+  {
+    "type": "question",
+    "level": "Apply",
+    "q": "Why did the settlement after Cuito Cuanavale matter beyond Angola?",
+    "options": [
+      "Namibia became independent and the region's alignments shifted",
+      "Portugal returned to administer Angola under UN control",
+      "The Soviet Union agreed to withdraw from Africa entirely",
+      "UNITA disbanded and its leaders left Angola for good"
+    ],
+    "correct": 0,
+    "explanation": "Namibian independence in 1990 is the regional consequence, and it's what the question reaches for. Option {opt3} didn't happen: UNITA fought on for years. An answer that stays inside Angola's borders has answered a smaller question than the one you were set.",
+    "noSource": true,
+    "marks": "4 marks"
+  },
+  {
+    "type": "question",
+    "level": "Evaluate",
+    "q": "What's the main limitation of a defence minister's memoir on Cuito Cuanavale?",
+    "options": [
+      "It can't say what the fighting did to his government",
+      "It gives no reliable detail on troop movements or equipment",
+      "It was written decades after the fighting had already finished",
+      "It contradicts every other published account of that battle"
+    ],
+    "correct": 0,
+    "explanation": "He can see his own forces. He can't see what the campaign did to his state's position, because that isn't visible from a command post. But option {opt1} is nearly the opposite of the truth. It's what you reach for when you've mixed up a limitation with a weakness, and the marks for the limitation are then gone.",
+    "noSource": true,
+    "marks": "2 marks"
+  },
+  {
+    "type": "question",
+    "level": "Apply",
+    "q": "A learner writes: both sides claimed victory, so we cannot know who won. What's wrong with that?",
+    "options": [
+      "It refuses to judge, when the outcomes afterwards can be weighed",
+      "It is wrong, because only one of the two sides ever claimed victory",
+      "It is wrong, because the two accounts do not actually disagree",
+      "It relies too heavily on evidence from Cuban and Soviet records"
+    ],
+    "correct": 0,
+    "explanation": "Cannot know is a refusal dressed as caution. Namibia's independence and the Cuban withdrawal are both on the record, so there's something to weigh. Option {opt2} is worth thinking about, because the two accounts genuinely don't disagree on the fighting. But they do disagree on what it meant, and you're asked about that.",
+    "noSource": true,
+    "marks": "Practice"
+  },
+  {
+    "type": "content",
+    "tag": "The question about now",
+    "html": "<h2>Question 3: a current issue in the media</h2><p>The third question in Section A gives you a newspaper article about something happening now, and connects it to what you studied. For Angola the connection is the ground itself.</p><p>The fighting stopped. The mines laid during it did not move. Angola remains one of the most heavily mined countries in the world, and clearance is still going on decades later.</p><p>The question has a fixed shape, and knowing it is most of the work.</p><p><strong>One part asks for your own knowledge</strong>, usually for something the article does not mention. <strong>Two parts ask you to take reasons off the page</strong>, one set from each side of the dispute. <strong>One part asks you to judge the article</strong>, which needs a position and then a reason for it.</p><p>Every part names its number. Two reasons means two, at two marks each.</p>",
+    "remember": "Question 3 asks for own knowledge first, then reasons from each side of the article, then a judgement on the article itself.",
+    "terms": [
+      {
+        "term": "Reparations",
+        "def": "Payment or other repair made to people harmed by past events. Who counts as harmed is usually the part that gets argued about."
+      }
+    ]
+  },
+  {
+    "type": "source",
+    "tag": "The article",
+    "sourceLabel": "The article",
+    "html": "<h2>Residents near old front lines press for faster mine clearance</h2>",
+    "source": {
+      "attr": "Written for Kula Revise in the style of a current news report. It is not a reproduction of a published article. In the exam this source is a real one, with a masthead and a date.",
+      "body": "<p>Residents of villages near former front lines in south-eastern Angola have asked the government to speed up landmine clearance and to compensate families who have lost land or limbs.</p><p>Community representatives say some fields have been unusable for more than thirty years. They say families have been farming ground they know is unsafe because there is nowhere else to plant, and that people are still being injured.</p><p>A government spokesperson said clearance is continuing and that Angola has cleared large areas already. The spokesperson said the mines were laid by many parties during a war that outside powers helped to fund, and that the cost of clearing them should not fall on Angola alone.</p>",
+      "toggleLabel": "How to read an article like this",
+      "toggle": "Two sides are quoted, and each is given a reason. That is deliberate, because the question will ask you for both sets separately. Read it once for the residents' reasons and once for the government's, and keep them apart on the page."
+    }
+  },
+  {
+    "type": "question",
+    "level": "Comprehend",
+    "marks": "4 marks",
+    "q": "Using your own knowledge, give TWO reasons foreign powers became involved in Angola that the article does not mention.",
+    "options": [
+      "The Cold War contest for influence, and South Africa's fear of an MPLA government beside Namibia",
+      "The mines laid during the fighting, and the land that families cannot safely farm today",
+      "The cost of clearance, and the government's view that Angola should not pay for it alone",
+      "The thirty years that have passed, and the injuries people in the villages have suffered"
+    ],
+    "correct": 0,
+    "explanation": "Your own knowledge means something the article does not give you. Options {opt1}, {opt2} and {opt3} are all lifted straight off the page. The question told you to bring your own, so they earn you nothing. Read the instruction before you read the article.",
+    "noSource": false
+  },
+  {
+    "type": "question",
+    "level": "Comprehend",
+    "marks": "4 marks",
+    "q": "Give TWO reasons the residents give for their claim.",
+    "options": [
+      "Fields have been unusable for decades, and people are still being injured",
+      "Clearance is continuing, and large areas have already been cleared safely",
+      "Outside powers funded the war, so the cost should not fall on Angola alone",
+      "The war ended long ago, and the government has other spending priorities now"
+    ],
+    "correct": 0,
+    "explanation": "Both halves come from the residents' side of the article. Options {opt1} and {opt2} are the government's reasons, and putting them here answers the next question instead of this one. Sort the two sides before you write, or you will hand the marker the right words under the wrong heading.",
+    "noSource": false
+  },
+  {
+    "type": "question",
+    "level": "Evaluate",
+    "marks": "4 marks",
+    "q": "Can this article be considered biased? A full answer needs a stance and one reason.",
+    "options": [
+      "Not strongly, because it reports both the residents and the government without emotive language",
+      "Yes, because any article written about a government is bound to take a side against it",
+      "Yes, because it mentions landmines, and landmines are an emotional subject for readers",
+      "It is impossible to say, because the article does not name the journalist who wrote it"
+    ],
+    "correct": 0,
+    "explanation": "You get two marks for the stance and two for the reason. An answer with only a yes or a no is half an answer. Option {opt3} refuses to take a stance at all, which is the version that loses most. Say which way you lean, then point at something in the article that supports it.",
+    "noSource": false
+  },
+  {
+    "type": "content",
+    "tag": "Worth knowing before Lesson 5",
+    "html": "<h2>Worth knowing before Lesson 5</h2><p>The question you'll sit in Lesson 5 runs from 1974 to about 1976. Everything in this lesson happens later.</p><p>That's deliberate. Cuito Cuanavale and the settlement are examinable content in their own right, and a question in another year can land on them.</p><p>So don't drop this lesson because it sits outside the dates of the next one. In Lesson 5 it becomes your own knowledge, which is the part of the paragraph question the sources can't give you.</p>",
+    "remember": "Everything after 1976 sits outside the next question and inside the syllabus. That's what own knowledge means."
+  },
+  {
+    "type": "carousel",
+    "tag": "Fact recap",
+    "heading": "The whole unit, on six cards",
+    "cards": [
+      {
+        "lead": "1961 to 1974",
+        "body": "Portugal holds on, three movements fight, and a coup in Lisbon ends it all at once."
+      },
+      {
+        "lead": "Jan to Nov 1975",
+        "body": "Alvor sets independence for 11 November, then collapses. The movements fight for Luanda."
+      },
+      {
+        "lead": "Aug to Nov 1975",
+        "body": "South Africa crosses in August and advances in October. Cuban instructors in October, troops on 5 November."
+      },
+      {
+        "lead": "1976",
+        "body": "South Africa withdraws. The Security Council condemns the invasion. The war carries on."
+      },
+      {
+        "lead": "1987 to 1988",
+        "body": "Cuito Cuanavale. Neither side takes the town, and both sides claim it."
+      },
+      {
+        "lead": "1988 to 1990",
+        "body": "Cuban withdrawal, South African withdrawal, Namibian independence. Angola's own war runs on to 2002."
+      }
+    ],
+    "terms": [
+      {
+        "term": "Front Line States",
+        "def": "The African states bordering white-ruled southern Africa that backed the liberation movements."
+      }
+    ]
+  },
+  {
+    "type": "question",
+    "build": true,
+    "part": "By 1988 the foreign involvement had become a conventional war, and Cuito Cuanavale is where its outcome was argued twice. Malan counted ground, Mandela counted consequences",
+    "q": "Which sentence closes the answer you've been building?",
+    "options": [
+      "By 1988 the foreign involvement had become a conventional war, and Cuito Cuanavale is where its outcome was argued twice. Malan counted ground, Mandela counted consequences",
+      "The battle of Cuito Cuanavale was fought in south-eastern Angola across 1987 and into 1988. Neither side managed to capture the town they had been fighting over",
+      "Magnus Malan called the campaign a clear victory for the South African Defence Force. Nelson Mandela called that same battle a turning point for the whole continent"
+    ],
+    "correct": 0,
+    "explanation": "A closing sentence says what it all amounted to. Option {opt0} does that, and it reaches past the fighting to the consequence. But options {opt1} and {opt2} both stop at description, and you've already got three sentences of argument in front of them.",
+    "noSource": true,
+    "buildLabel": "What Lesson 4 argues"
+  },
+  {
+    "type": "runsum",
+    "tag": "Your running summary",
+    "heading": "What this lesson argues",
+    "label": "The argument so far"
+  },
+  {
+    "type": "content",
+    "tag": "Beyond the exam",
+    "html": "<h2>Deciding what winning meant</h2><p>Two people can look at the same afternoon and count different things, and both be telling you the truth.</p><p>That isn't a reason to give up on judging. It's a reason to say what you're measuring before you announce a verdict.</p><p>An election, an argument, a season, a job you didn't get. Someone will tell you it went well and someone will tell you it didn't. Ask what each of them is counting, then decide which measure actually matters here.</p>",
+    "terms": [
+      {
+        "term": "Own knowledge",
+        "def": "What you bring that the sources don't give you. The paragraph question is not finished without it."
+      }
+    ]
+  }
+];
+
+const CHIP = {
+  Stand:{cls:"chip-a"}, Evidence:{cls:"chip-b"}, Focus:{cls:"chip-c"}, Counter:{cls:"chip-d"},
+  Comprehend:{cls:"chip-a"}, Apply:{cls:"chip-b"}, Analyse:{cls:"chip-c"}, Evaluate:{cls:"chip-d"},
+  Recall:{cls:"chip-a"}, Understand:{cls:"chip-b"},
+  instinct:{cls:"chip-instinct"}
+};
+// A lesson carries one spine or the other. Work it out on first use rather than at
+// load time, so this never depends on FLOW having been evaluated yet.
+const SOURCE_SPINE = ["Comprehend","Apply","Analyse","Evaluate"];
+const ESSAY_SPINE  = ["Stand","Evidence","Focus","Counter"];
+let _spine = null;
+function spine(){
+  if(_spine) return _spine;
+  const flow = (typeof FLOW !== "undefined" && Array.isArray(FLOW)) ? FLOW : [];
+  _spine = flow.some(s => s && SOURCE_SPINE.includes(s.level)) ? SOURCE_SPINE : ESSAY_SPINE;
+  return _spine;
+}
+// Never let an unknown label throw: an unrecognised spine word degrades to the neutral chip.
+const chipCls = lvl => (CHIP[lvl] || CHIP.instinct).cls;
+
+const stage = document.getElementById("stage");
+const nav = document.getElementById("nav");
+const topBar = document.getElementById("top-bar");
+const nextBtn = document.getElementById("next-btn");
+const backBtn = document.getElementById("back-btn");
+
+const state = {
+  idx: -1,                 // -1 = cover
+  answers: {},             // qIdx -> chosen content index (mcq) or serialized (interactive)
+  revealed: {},            // qIdx -> bool
+  order: {},               // qIdx -> shuffled content-index array
+  carRead: {},             // stepIdx -> Set of read card indices
+  interState: {},          // qIdx -> working state for order/sort
+  poppedBuild: {},         // qIdx -> bool (running-summary popup already shown)
+};
+
+const buildIds = FLOW.map((f,i)=>f.build?i:null).filter(i=>i!==null);
+const assessedIds = FLOW.map((f,i)=>(f.type==="question"&&f.level)?i:null).filter(i=>i!==null);
+
+function esc(s){
+  return String(s).replace(/[&<>"]/g, (c, i, str) => {
+    if(c === "&"){
+      // leave a real HTML entity intact (e.g. &middot; &amp; &#8635;)
+      const rest = str.slice(i);
+      if(/^&(#\d+|#x[0-9a-fA-F]+|[a-zA-Z]+);/.test(rest)) return "&";
+    }
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];
+  });
+}
+
+// {optN} -> the letter option N carries after shuffle
+function resolveOpts(text, order){
+  if(!text) return text;
+  return text.replace(/\{opt(\d+)\}/g,(m,n)=>{
+    const p = order ? order.indexOf(parseInt(n,10)) : -1;
+    return p>=0 ? String.fromCharCode(65+p) : m;
+  });
+}
+
+// ============ COVER ============
+function renderCover(){
+  topBar.classList.add("hidden");
+  nav.classList.add("hidden");
+  const lines = (COVER.lines||[]).map(l=>`<span>${esc(l)} </span>`).join("");
+  stage.innerHTML = `
+    <div class="cover">
+      <div class="cover-eyebrow">${COVER.eyebrow||""}</div>
+      <h1 class="cover-title">${esc(COVER.title||"")}</h1>
+      <div class="flourish"></div>
+      <div class="cover-line" id="cover-line">${lines}</div>
+      <button class="btn-begin" id="begin-btn">${COVER.begin||"Begin"} <span class="sa">&rarr;</span></button>
+      ${COVER.time?`<div class="cover-time">${esc(COVER.time)}</div>`:""}
+      ${COVER.skip!==false?`<button class="skip-link" id="skip-btn">Skip the opening if you have done this lesson before</button>`:""}
+    </div>`;
+  const spans = [...document.querySelectorAll("#cover-line span")];
+  spans.forEach((s,i)=>setTimeout(()=>s.classList.add("vis"), 350*(i+1)));
+  document.getElementById("begin-btn").addEventListener("click",()=>{ state.idx=0; render(); });
+  const skip = document.getElementById("skip-btn");
+  if(skip) skip.addEventListener("click",()=>{ state.idx = firstContentIdx(); render(); });
+}
+function firstContentIdx(){
+  const i = FLOW.findIndex(f=>f.type==="content"||f.type==="carousel"||f.type==="stat");
+  return i<0?0:i;
+}
+
+// ============ STORY HOOK ============
+function renderStory(item){
+  const lines = item.lines.map((l,i)=>{
+    const last = i===item.lines.length-1 ? " last" : "";
+    return `<div class="story-line${last}">${esc(l)}</div>`;
+  }).join("");
+  stage.innerHTML = `
+    <div class="story">
+      <div class="story-num">${esc(item.marker)}</div>
+      <div class="story-unit">${esc(item.markerLabel||"")}</div>
+      <div class="story-rule"></div>
+      ${lines}
+    </div>`;
+  const els = [...stage.querySelectorAll(".story-line")];
+  nextBtn.disabled = true;
+  els.forEach((el,i)=>setTimeout(()=>{
+    el.classList.add("vis");
+    if(i===els.length-1) nextBtn.disabled = false;
+  }, 650*(i+1)));
+}
+
+// ============ STATIC CONTENT ============
+// Key-terms strip: label + one expandable chip per term.
+function ktStrip(terms){
+  if(!terms || !terms.length) return "";
+  const chips = terms.map(t=>`<details class="kt-term"><summary>${esc(t.term)}</summary><div class="kt-def">${esc(t.def)}</div></details>`).join("");
+  return `<div class="kt"><div class="kt-label">Key terms &middot; tap to open</div><div class="kt-row">${chips}</div></div>`;
+}
+function rememberBox(text){
+  if(!text) return "";
+  return `<details class="remember"><summary>Remember it like this</summary><div class="disc-body">${text}</div></details>`;
+}
+
+function renderContent(item){
+  stage.innerHTML = `<div class="card">${item.tag?`<div class="stage-tag">${esc(item.tag)}</div>`:""}${item.html}${rememberBox(item.remember)}${ktStrip(item.terms)}</div>`;
+  bindToggles();
+}
+
+// ============ CAROUSEL ============
+function renderCarousel(item){
+  const cards = item.cards;
+  if(!state.carRead[state.idx]) state.carRead[state.idx] = new Set([0]);
+  const read = state.carRead[state.idx];
+  const pos = state.interState[state.idx]?.pos || 0;
+  read.add(pos);
+  const c = cards[pos];
+  const body = typeof c==="string" ? c : `<span class="cc-lead">${esc(c.lead)}</span>${esc(c.body)}`;
+  const dots = cards.map((_,i)=>`<span class="car-dot ${read.has(i)?"read":""} ${i===pos?"here":""}"></span>`).join("");
+  const allRead = read.size===cards.length;
+  stage.innerHTML = `
+    <div class="card">
+      ${item.tag?`<div class="stage-tag">${esc(item.tag)}</div>`:""}
+      ${item.heading?`<h2>${esc(item.heading)}</h2>`:""}
+      <div class="car-wrap">
+        <div class="car-prompt" id="car-prompt">${allRead?`That is all ${cards.length}. Continue is unlocked.`:`Tap the arrows to read all ${cards.length}. Continue unlocks when you have.`}</div>
+        <div class="car-frame"><div class="car-card">${body}</div></div>
+        <div class="car-nav">
+          <div class="car-dots">${dots}</div>
+          <div class="car-count">${pos+1} / ${cards.length}</div>
+          <div class="car-btns">
+            <button class="car-btn" id="car-prev" ${pos===0?"disabled":""}>&larr;</button>
+            <button class="car-btn" id="car-next" ${pos===cards.length-1?"disabled":""}>&rarr;</button>
+          </div>
+        </div>
+      </div>
+      ${ktStrip(item.terms)}
+    </div>`;
+  nextBtn.disabled = !allRead;
+  const setPos=(p)=>{ state.interState[state.idx]={pos:p}; renderCarousel(item); };
+  const pv=document.getElementById("car-prev"), nx=document.getElementById("car-next");
+  if(pv) pv.addEventListener("click",()=>setPos(Math.max(0,pos-1)));
+  if(nx) nx.addEventListener("click",()=>setPos(Math.min(cards.length-1,pos+1)));
+}
+
+// ============ STAT STRIP ============
+function renderStat(item){
+  const stats = item.stats.map(s=>`<div class="stat"><div class="stat-num">${esc(s.num)}</div><div class="stat-label">${esc(s.label)}</div></div>`).join("");
+  stage.innerHTML = `
+    <div class="card">
+      ${item.tag?`<div class="stage-tag">${esc(item.tag)}</div>`:""}
+      ${item.heading?`<h2>${esc(item.heading)}</h2>`:""}
+      ${item.lead?`<p>${item.lead}</p>`:""}
+      <div class="stat-strip">${stats}</div>
+      ${ktStrip(item.terms)}
+    </div>`;
+}
+
+
+// Reopen strip: shown on a question that follows a source, so the learner
+// never has to tap Back to reread the extract.
+//
+// v2.1. Was: the strip offered LAST_SOURCE only. That is correct for a lesson
+// built on one source and wrong for a capstone, where the paragraph question
+// asks for all of them and a learner on the closing screens could reach only
+// the most recent. Now every source seen so far in the file is reachable: a row
+// of tabs, and a swipeable track underneath. One source renders exactly as
+// before, so nothing in the existing corpus changes.
+function sourcePeek(item){
+  if(item.noSource) return "";
+  if(item.sourceRef && item.sourceRef.body){
+    return peekShell([item.sourceRef]);
+  }
+  const seen = SOURCES_SEEN.filter(s => s && s.body);
+  if(!seen.length) return "";
+  return peekShell(seen);
+}
+
+function peekShell(list){
+  const many = list.length > 1;
+  const cue = many
+    ? `Tap to read the ${list.length} sources again`
+    : `Tap to read ${esc(list[0].label)} again`;
+  const who = many
+    ? list.map(s=>esc(s.label)).join(" &middot; ")
+    : esc(stripTags(list[0].attr)).slice(0,90);
+  const tabs = many
+    ? `<div class="peek-tabs" role="tablist">${list.map((s,i)=>
+        `<button class="peek-tab${i===list.length-1?" on":""}" data-peek="${i}" role="tab">${esc(s.label)}</button>`).join("")}</div>`
+    : "";
+  const track = `<div class="peek-track" data-peek-track>${list.map(s=>
+      `<div class="peek-slide"><div class="peek-attr">${s.attr}</div>${s.body}</div>`).join("")}</div>`;
+  return `<details class="srcpeek${many?" multi":""}"><summary>
+      <svg class="chev" width="11" height="13" viewBox="0 0 11 13" fill="none" aria-hidden="true"><path d="M2 1.5 L8.5 6.5 L2 11.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="peek-cue">${cue}<span class="peek-who">${who}</span></span>
+    </summary><div class="peek-body">${tabs}${track}</div></details>`;
+}
+
+// Tabs scroll the track; swiping the track updates the tabs. Both work alone,
+// so a learner who never notices the tabs can still swipe, and the other way round.
+function bindPeek(){
+  stage.querySelectorAll(".srcpeek.multi").forEach(d=>{
+    const track = d.querySelector("[data-peek-track]");
+    const tabs  = Array.from(d.querySelectorAll(".peek-tab"));
+    if(!track || !tabs.length) return;
+    const go = i => track.scrollTo({ left: i * track.clientWidth, behavior: "smooth" });
+    tabs.forEach(t => t.addEventListener("click", () => go(parseInt(t.dataset.peek,10))));
+    let tick = null;
+    track.addEventListener("scroll", () => {
+      clearTimeout(tick);
+      tick = setTimeout(() => {
+        const i = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        tabs.forEach((t,n) => t.classList.toggle("on", n === i));
+      }, 60);
+    });
+    // open on the source the learner saw last, which is the one they were reading
+    d.addEventListener("toggle", () => {
+      if(d.open) requestAnimationFrame(() => { track.scrollLeft = (tabs.length-1) * track.clientWidth; });
+    });
+  });
+}
+function stripTags(h){ return String(h||"").replace(/<[^>]+>/g,""); }
+
+// ============ SOURCE ============
+// Every source rendered so far, in order, so any later question can reopen all
+// of them. LAST_SOURCE is kept as the final entry for anything still reading it.
+let SOURCES_SEEN = [];
+let LAST_SOURCE = null;
+
+function renderSource(item){
+  const s=item.source;
+  LAST_SOURCE = { label: item.sourceLabel || item.tag || "the source", attr: s.attr, body: s.body };
+  if(!SOURCES_SEEN.some(x => x.label === LAST_SOURCE.label)) SOURCES_SEEN.push(LAST_SOURCE);
+  stage.innerHTML = `
+    <div class="card">
+      ${item.tag?`<div class="stage-tag">${esc(item.tag)}</div>`:""}
+      ${item.html||""}
+      <div class="source">
+        <div class="source-attr">${s.attr}</div>
+        <div class="source-body">${s.body}</div>
+        ${s.toggle?`<button class="toggle-btn" data-toggle>${s.toggleLabel||"What does this actually mean?"}</button><div class="toggle-body">${s.toggle}</div>`:""}
+      </div>
+      ${ktStrip(item.terms)}
+    </div>`;
+  bindToggles();
+}
+
+// ============ QUESTION (mcq / order / sort) ============
+function renderQuestion(item){
+  if(item.mode==="order") return renderOrder(item);
+  if(item.mode==="sort") return renderSort(item);
+  return renderMCQ(item);
+}
+
+function renderMCQ(item){
+  const answered = state.revealed[state.idx];
+  if(!state.order[state.idx]){
+    const a=item.options.map((_,i)=>i);
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    state.order[state.idx]=a;
+  }
+  const order=state.order[state.idx];
+  const chip = item.level ? `<span class="chip ${chipCls(item.level)}">${item.level}</span>` : `<span class="chip chip-instinct">Instinct</span>`;
+  let opts="";
+  order.forEach((orig,pos)=>{
+    let cls="option", mark="";
+    if(answered){
+      if(orig===item.correct){ cls+=" correct"; mark=`<span class="opt-mark">&#10003;</span>`; }
+      else if(orig===state.answers[state.idx]){ cls+=" wrong"; mark=`<span class="opt-mark">&#10007;</span>`; }
+      else cls+=" dimmed";
+    } else if(state.answers[state.idx]===orig){ cls+=" selected"; }
+    opts+=`<button class="${cls}" data-orig="${orig}" ${answered?"disabled":""}><span class="opt-letter">${String.fromCharCode(65+pos)}</span><span class="opt-text">${item.options[orig]}</span>${mark}</button>`;
+  });
+  stage.innerHTML = `
+    <div class="card">
+      <div class="q-meta">${chip}${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>
+      ${sourcePeek(item)}
+      <div class="q-text">${item.q}</div>
+      <div class="options">${opts}</div>
+      ${answered?`<div class="explanation ${state.answers[state.idx]===item.correct?"ok":"no"}"><div class="expl-label">${state.answers[state.idx]===item.correct?"Correct":"Not this one"}</div><div class="expl-text">${resolveOpts(item.explanation, order)}</div></div>`:""}
+    </div>`;
+  if(!answered){
+    stage.querySelectorAll(".option").forEach(b=>b.addEventListener("click",()=>{
+      state.answers[state.idx]=parseInt(b.dataset.orig,10);
+      state.revealed[state.idx]=true;
+      render();
+    }));
+  }
+  syncNav(true);
+}
+
+// order: tap to place into a numbered list, tap placed to remove; Check when all placed
+function renderOrder(item){
+  const answered = state.revealed[state.idx];
+  const st = state.interState[state.idx] || (state.interState[state.idx]={placed:[]});
+  const placed = st.placed;                       // array of content indices in chosen order
+  const remaining = item.items.map((_,i)=>i).filter(i=>!placed.includes(i));
+  let placedHtml = placed.map((ci,pos)=>{
+    let cls="inter-item inter-placed";
+    if(answered){ cls = "inter-item "+(ci===item.answer[pos]?"ok":"no"); }
+    return `<button class="${cls}" data-placed="${ci}" ${answered?"disabled":""}><span class="rank">${pos+1}</span><span>${esc(item.items[ci])}</span></button>`;
+  }).join("");
+  let poolHtml = remaining.map(ci=>`<button class="inter-item" data-pool="${ci}"><span class="rank">&bull;</span><span>${esc(item.items[ci])}</span></button>`).join("");
+  stage.innerHTML = `
+    <div class="card">
+      <div class="q-meta"><span class="chip ${item.level?chipCls(item.level):"chip-instinct"}">${item.level||"Instinct"}</span>${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>
+      ${sourcePeek(item)}
+      <div class="q-text">${item.q}</div>
+      <div class="inter">
+        <div class="inter-pool" id="placed">${placedHtml||`<div style="color:var(--fade);font-size:0.9rem;padding:0.4rem 0;">Tap an event below to start putting them in order.</div>`}</div>
+        ${remaining.length?`<div style="height:1px;background:rgba(27,42,51,0.14);margin:0.9rem 0;"></div><div class="inter-pool" id="pool">${poolHtml}</div>`:""}
+      </div>
+      ${answered?`<div class="explanation ${state.answers[state.idx]===item.correct?"ok":"no"}"><div class="expl-label">${state.answers[state.idx]===item.correct?"Correct":"Not this one"}</div><div class="expl-text">${resolveOpts(item.explanation,null)}</div></div>`:""}
+    </div>`;
+  if(!answered){
+    stage.querySelectorAll("[data-pool]").forEach(b=>b.addEventListener("click",()=>{ placed.push(parseInt(b.dataset.pool,10)); renderOrder(item); }));
+    stage.querySelectorAll("[data-placed]").forEach(b=>b.addEventListener("click",()=>{ const ci=parseInt(b.dataset.placed,10); st.placed=placed.filter(x=>x!==ci); renderOrder(item); }));
+  }
+  const allPlaced = placed.length===item.items.length;
+  syncNavInteractive(allPlaced, answered, ()=>{
+    state.answers[state.idx]=placed.slice();
+    state.revealed[state.idx]=true; render();
+  });
+}
+
+// sort: two columns, tap an item's column button to place, tap placed to remove
+function renderSort(item){
+  const answered = state.revealed[state.idx];
+  const st = state.interState[state.idx] || (state.interState[state.idx]={col:{}});
+  const col = st.col;                              // content index -> 0/1
+  const unplaced = item.items.map((_,i)=>i).filter(i=>!(i in col));
+  const colCards = (which)=>item.items.map((it,ci)=>{
+    if(col[ci]!==which) return "";
+    let cls="inter-item inter-placed";
+    if(answered) cls="inter-item "+(item.answer[ci]===which?"ok":"no");
+    return `<button class="${cls}" data-un="${ci}" ${answered?"disabled":""}><span>${esc(it)}</span></button>`;
+  }).join("");
+  const pool = unplaced.map(ci=>`
+    <div class="inter-item" style="flex-direction:column;align-items:stretch;cursor:default;">
+      <span>${esc(item.items[ci])}</span>
+      <div class="sort-btns">
+        <button class="sort-place" data-place="${ci}" data-col="0">${esc(item.cols[0])}</button>
+        <button class="sort-place" data-place="${ci}" data-col="1">${esc(item.cols[1])}</button>
+      </div>
+    </div>`).join("");
+  stage.innerHTML = `
+    <div class="card">
+      <div class="q-meta"><span class="chip ${item.level?chipCls(item.level):"chip-instinct"}">${item.level||"Instinct"}</span>${item.marks?`<span class="marks">${esc(item.marks)}</span>`:""}</div>
+      ${sourcePeek(item)}
+      <div class="q-text">${item.q}</div>
+      <div class="inter">
+        <div class="sort-cols">
+          <div class="sort-col"><h4>${esc(item.cols[0])}</h4>${colCards(0)}</div>
+          <div class="sort-col"><h4>${esc(item.cols[1])}</h4>${colCards(1)}</div>
+        </div>
+        ${unplaced.length?`<div style="height:1px;background:rgba(27,42,51,0.14);margin:0.9rem 0;"></div><div class="inter-pool">${pool}</div>`:""}
+      </div>
+      ${answered?`<div class="explanation ${state.answers[state.idx]===item.correct?"ok":"no"}"><div class="expl-label">${state.answers[state.idx]===item.correct?"Correct":"Not this one"}</div><div class="expl-text">${resolveOpts(item.explanation,null)}</div></div>`:""}
+    </div>`;
+  if(!answered){
+    stage.querySelectorAll("[data-place]").forEach(b=>b.addEventListener("click",()=>{ col[parseInt(b.dataset.place,10)]=parseInt(b.dataset.col,10); renderSort(item); }));
+    stage.querySelectorAll("[data-un]").forEach(b=>b.addEventListener("click",()=>{ delete col[parseInt(b.dataset.un,10)]; renderSort(item); }));
+  }
+  const allPlaced = unplaced.length===0;
+  syncNavInteractive(allPlaced, answered, ()=>{
+    state.answers[state.idx]=Object.assign({},col);
+    state.revealed[state.idx]=true; render();
+  });
+}
+
+// ============ RUNNING SUMMARY (own screen) ============
+function renderRunsum(item){
+  const parts = buildIds.filter(i=>i<=state.idx && state.revealed[i]).map(i=>FLOW[i].part);
+  const freshIdx = parts.length-1;
+  const lis = parts.map((p,i)=>`<li class="${i===freshIdx?"fresh":""}">${esc(p)}</li>`).join("");
+  stage.innerHTML = `
+    <div class="card">
+      <div class="stage-tag">${esc(item.tag||"Your running summary")}</div>
+      ${item.heading?`<h2>${esc(item.heading)}</h2>`:""}
+      ${item.html?item.html:""}
+      <div class="runsum"><div class="runsum-label">${esc(item.label||"Your running summary")}</div><ol>${lis}</ol></div>
+      ${item.outro?`<p class="runsum-outro">${item.outro}</p>`:""}
+    </div>`;
+}
+
+// ============ POPUP after a build question ============
+function showBuildPop(part, label){
+  const back=document.createElement("div");
+  back.className="pop-back";
+  back.innerHTML=`<div class="pop"><div class="pop-label">${esc(label||"The line this lesson argues")}</div><div class="pop-text">${esc(part)}</div><button class="pop-btn" id="pop-ok">Got it</button></div>`;
+  document.body.appendChild(back);
+  document.getElementById("pop-ok").addEventListener("click",()=>back.remove());
+}
+
+// ============ NAV ============
+function syncNav(isQuestion){
+  nav.classList.remove("hidden");
+  backBtn.disabled=false;
+  backBtn.innerHTML = state.idx===0 ? "&larr; Back to the start" : "&larr; Back";
+  nextBtn.style.display="";
+  nextBtn.disabled = isQuestion ? !state.revealed[state.idx] : false;
+  nextBtn.innerHTML = state.idx===FLOW.length-1 ? "See results &rarr;" : "Continue &rarr;";
+}
+// interactive items: replace Continue with a Check button until answered
+function syncNavInteractive(canCheck, answered, onCheck){
+  nav.classList.remove("hidden");
+  backBtn.disabled=false;
+  backBtn.innerHTML = state.idx===0 ? "&larr; Back to the start" : "&larr; Back";
+  if(answered){
+    nextBtn.style.display="";
+    nextBtn.disabled=false;
+    nextBtn.innerHTML = state.idx===FLOW.length-1 ? "See results &rarr;" : "Continue &rarr;";
+    nextBtn.onclick = defaultNext;
+  } else {
+    nextBtn.style.display="";
+    nextBtn.disabled=!canCheck;
+    nextBtn.innerHTML="Check &rarr;";
+    nextBtn.onclick = ()=>{ onCheck(); };
+  }
+}
+
+function defaultNext(){
+  // fire the running-summary popup when leaving a build question
+  const cur=FLOW[state.idx];
+  if(cur && cur.build && state.revealed[state.idx] && !state.poppedBuild[state.idx]){
+    state.poppedBuild[state.idx]=true;
+    showBuildPop(cur.part, cur.buildLabel);
+  }
+  if(state.idx<FLOW.length-1){ state.idx++; render(); } else showResults();
+}
+
+nextBtn.onclick = defaultNext;
+backBtn.addEventListener("click",()=>{
+  if(state.idx<=0){ state.idx=-1; renderCover(); }
+  else { state.idx--; render(); }
+});
+
+// ============ RENDER DISPATCH ============
+function render(){
+  window.scrollTo({top:0,behavior:"instant"});
+  if(state.idx===-1){ renderCover(); return; }
+  topBar.classList.remove("hidden");
+  document.getElementById("step-count").textContent=`Step ${state.idx+1} of ${FLOW.length}`;
+  document.getElementById("fill").style.width=((state.idx+1)/FLOW.length*100)+"%";
+  const item=FLOW[state.idx];
+  nextBtn.onclick = defaultNext;
+  switch(item.type){
+    case "story": renderStory(item); syncNav(false); break;
+    case "carousel": renderCarousel(item); /* nav handled inside */ syncNavCarousel(); break;
+    case "stat": renderStat(item); syncNav(false); break;
+    case "source": renderSource(item); syncNav(false); break;
+    case "question": renderQuestion(item); break;
+    case "runsum": renderRunsum(item); syncNav(false); break;
+    default: renderContent(item); syncNav(false);
+  }
+}
+function syncNavCarousel(){
+  nav.classList.remove("hidden");
+  backBtn.disabled=false;
+  backBtn.innerHTML = state.idx===0 ? "&larr; Back to the start" : "&larr; Back";
+  nextBtn.style.display="";
+  nextBtn.innerHTML = state.idx===FLOW.length-1 ? "See results &rarr;" : "Continue &rarr;";
+  // disabled state already set inside renderCarousel
+}
+
+function bindToggles(){
+  bindPeek();
+  stage.querySelectorAll("[data-toggle]").forEach(b=>b.addEventListener("click",()=>{
+    b.nextElementSibling.classList.toggle("open");
+  }));
+}
+
+// ============ RESULTS ============
+function showResults(){
+  kulaEmbed("completed");
+  setTimeout(function(){var b=document.getElementById("finish-btn");if(b&&!b.dataset.kembed){b.dataset.kembed="1";b.addEventListener("click",function(){kulaEmbed("advance");});}},0);
+  topBar.classList.add("hidden");
+  nav.classList.add("hidden");
+  let correct=0;
+  assessedIds.forEach(i=>{ if(isRight(i)) correct++; });
+  const total=assessedIds.length;
+  const pct = total?Math.round(correct/total*100):0;
+  let band="", desc="";
+  if(pct>=85){ band="Excellent"; desc=RESULTS.bands.excellent; }
+  else if(pct>=70){ band="Strong"; desc=RESULTS.bands.strong; }
+  else if(pct>=55){ band="Solid"; desc=RESULTS.bands.solid; }
+  else if(pct>=40){ band="Patchy"; desc=RESULTS.bands.patchy; }
+  else { band="Start again"; desc=RESULTS.bands.start; }
+  const rows=spine().map(sp=>{
+    const ids=assessedIds.filter(i=>FLOW[i].level===sp);
+    if(!ids.length) return "";
+    const g=ids.filter(i=>isRight(i)).length;
+    const p=Math.round(g/ids.length*100);
+    return `<div class="bd-row"><div class="bd-name">${sp}</div><div class="bd-bar"><div class="bd-fill" style="width:${p}%"></div></div><div class="bd-score">${g}/${ids.length}</div></div>`;
+  }).join("");
+  const parts=buildIds.filter(i=>state.revealed[i]).map(i=>FLOW[i].part);
+  const runsum = parts.length?`<div class="breakdown"><div class="breakdown-label">Your running summary</div><ol style="margin:0;padding-left:1.3rem;">${parts.map(p=>`<li style="font-size:0.98rem;line-height:1.62;margin-bottom:0.6rem;">${esc(p)}</li>`).join("")}</ol></div>`:"";
+  stage.innerHTML = `
+    <div class="results-head">
+      <div class="results-eyebrow">${RESULTS.eyebrow||"Lesson report"}</div>
+      <h1 class="results-title">${esc(RESULTS.title||"Where you stand")}</h1>
+    </div>
+    <div class="score-row">
+      <div class="score-block"><div class="score-num">${correct}<span class="score-den">/${total}</span></div><div class="score-label">Correct</div></div>
+      <div class="score-block"><div class="score-num">${pct}<span class="score-den">%</span></div><div class="score-label">Accuracy</div></div>
+      <div class="score-block"><div class="score-word">${band}</div><div class="score-label">Band</div></div>
+    </div>
+    <div class="grade-desc">${desc}</div>
+    <div class="breakdown"><div class="breakdown-label">By skill</div>${rows}</div>
+    ${runsum}
+    <div class="results-actions">
+      <button class="btn-secondary" id="restart-btn">Restart lesson</button>
+      <button class="btn-primary" id="finish-btn">Finish &rarr;</button>
+    </div>
+    ${RESULTS.footer?`<div style="text-align:center;margin-top:1.1rem;font-size:0.92rem;color:var(--fade);">${esc(RESULTS.footer)}</div>`:""}`;
+  document.getElementById("restart-btn").addEventListener("click",()=>{
+    state.idx=-1; state.answers={}; state.revealed={}; state.order={}; state.carRead={}; state.interState={}; state.poppedBuild={};
+    renderCover();
+  });
+  document.getElementById("finish-btn").addEventListener("click",()=>{
+    const back=document.createElement("div");
+    back.className="pop-back";
+    const D = RESULTS.done||{};
+    back.innerHTML=`<div class="pop"><div class="pop-label">${esc(D.label||"Lesson complete")}</div>${D.title?`<h3 style="margin:.4rem 0 .2rem;font-size:1.05rem;">${esc(D.title)}</h3>`:""}<div class="pop-text">${esc(D.text||"Tap Done to continue to the next lesson.")}</div><button class="pop-btn" id="fin-ok">Close</button></div>`;
+    document.body.appendChild(back);
+    document.getElementById("fin-ok").addEventListener("click",()=>back.remove());
+  });
+}
+
+function isRight(i){
+  const item=FLOW[i]; const ans=state.answers[i];
+  if(ans===undefined) return false;
+  if(item.mode==="order") return JSON.stringify(ans)===JSON.stringify(item.answer);
+  if(item.mode==="sort"){ return item.items.every((_,ci)=>ans[ci]===item.answer[ci]); }
+  return ans===item.correct;
+}
+
+renderCover();
+})();
+
+
+/* ---- MODE TOGGLE ---------------------------------------------------------
+   Injects its own button so there is no stray markup, and lives inside the
+   single script block so a first-to-last script extraction still parses. */
+(function(){
+  try{ var st = localStorage.getItem("kula-mode");
+    if(st === "dark"){ document.body.classList.add("dark"); }
+    else if(st !== "light" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches){ document.body.classList.add("dark"); }
+  }catch(e){}
+  var SUN='<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>';
+  var MOON='<path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/>';
+  var b=document.getElementById("kula-mode-toggle");
+  if(!b){
+    b=document.createElement("button");
+    b.className="mode-toggle"; b.id="kula-mode-toggle"; b.type="button";
+    b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" id="mode-icon"></svg><span id="mode-label"></span>';
+    document.body.appendChild(b);
+  }
+  var lab=document.getElementById("mode-label"), ic=document.getElementById("mode-icon");
+  function paint(){
+    var onDark=document.body.classList.contains("dark");
+    var showing = onDark ? "dark" : "light";
+    var offering = showing==="dark" ? "light" : "dark";
+    lab.textContent = offering==="light" ? "Light mode" : "Dark mode";
+    ic.innerHTML = offering==="light" ? SUN : MOON;
+    b.setAttribute("aria-pressed", onDark ? "true" : "false");
+    b.setAttribute("aria-label", "Switch to " + offering + " mode");
+  }
+  b.addEventListener("click",function(){
+    var onDark=document.body.classList.toggle("dark");
+    try{ localStorage.setItem("kula-mode", onDark ? "dark" : "light"); }catch(e){}
+    paint();
+  });
+  paint();
+
+})();
+</script>
+</body>
+</html>
