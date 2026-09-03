@@ -758,7 +758,7 @@ const RESULTS = {
   "done": {
     "label": "Lesson complete",
     "title": "The Battle Both Sides Won",
-    "text": "Tap Done to continue to Lesson 5, Putting It Together."
+    "text": "Next: Lesson 5, Putting It Together."
   },
   "footer": "Next: Lesson 5, the full question shape with a paragraph at the end.",
   "bands": {
@@ -1758,21 +1758,14 @@ function showResults(){
     ${runsum}
     <div class="results-actions">
       <button class="btn-secondary" id="restart-btn">Restart lesson</button>
-      <button class="btn-primary" id="finish-btn">Finish &rarr;</button>
+      <button class="btn-primary" id="finish-btn">Continue to Lesson 5 &rarr;</button>
     </div>
     ${RESULTS.footer?`<div style="text-align:center;margin-top:1.1rem;font-size:0.92rem;color:var(--fade);">${esc(RESULTS.footer)}</div>`:""}`;
   document.getElementById("restart-btn").addEventListener("click",()=>{
     state.idx=-1; state.answers={}; state.revealed={}; state.order={}; state.carRead={}; state.interState={}; state.poppedBuild={};
     renderCover();
   });
-  document.getElementById("finish-btn").addEventListener("click",()=>{
-    const back=document.createElement("div");
-    back.className="pop-back";
-    const D = RESULTS.done||{};
-    back.innerHTML=`<div class="pop"><div class="pop-label">${esc(D.label||"Lesson complete")}</div>${D.title?`<h3 style="margin:.4rem 0 .2rem;font-size:1.05rem;">${esc(D.title)}</h3>`:""}<div class="pop-text">${esc(D.text||"Tap Done to continue to the next lesson.")}</div><button class="pop-btn" id="fin-ok">Close</button></div>`;
-    document.body.appendChild(back);
-    document.getElementById("fin-ok").addEventListener("click",()=>back.remove());
-  });
+  /* the finish button advances; the modal it used to open was a dead end */
 }
 
 function isRight(i){
